@@ -4,10 +4,8 @@ export type BotSettingsDto = {
   id: string;
   status: BotSettingsStatus;
   assistantName: string;
+  systemPrompt: string | null;
   personaPrompt: string | null;
-  paymentInstructions: string | null;
-  exchangeRate: number | null;
-  exchangeRateUpdatedAt: string | null;
   chatModel: string;
   embeddingModel: string;
   embeddingDimensions: number;
@@ -19,7 +17,6 @@ export type BotSettingsDto = {
   handoffEnabled: boolean;
   handoffMinutes: number;
   autoCreateClient: boolean;
-  autoCreateSale: boolean;
   contactDailyMessageLimit: number;
   updatedAt: string | null;
 };
@@ -29,10 +26,8 @@ export function toBotSettingsDto(row: BotSettingsRow): BotSettingsDto {
     id: row.id,
     status: row.status,
     assistantName: row.assistantName,
+    systemPrompt: row.systemPrompt,
     personaPrompt: row.personaPrompt,
-    paymentInstructions: row.paymentInstructions,
-    exchangeRate: row.exchangeRate === null ? null : Number(row.exchangeRate),
-    exchangeRateUpdatedAt: row.exchangeRateUpdatedAt?.toISOString() ?? null,
     chatModel: row.chatModel,
     embeddingModel: row.embeddingModel,
     embeddingDimensions: row.embeddingDimensions,
@@ -44,7 +39,6 @@ export function toBotSettingsDto(row: BotSettingsRow): BotSettingsDto {
     handoffEnabled: row.handoffEnabled,
     handoffMinutes: row.handoffMinutes,
     autoCreateClient: row.autoCreateClient,
-    autoCreateSale: row.autoCreateSale,
     contactDailyMessageLimit: row.contactDailyMessageLimit,
     updatedAt: row.updatedAt?.toISOString() ?? null,
   };

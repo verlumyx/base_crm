@@ -8,7 +8,7 @@ import { escalarAHumanoTool } from './handoff.tool';
  * Every capability the assistant has, and nothing else.
  *
  * This list IS the security boundary: there is no free-form SQL tool, and nothing here can read
- * `app_accounts` (streaming credentials, costs) or another company's data — each tool takes its
+ * another company's data — each tool takes its
  * `companyId` from the runtime context, never from the model's arguments.
  */
 export function buildToolRegistry(settings: BotSettingsRow): BotTool[] {

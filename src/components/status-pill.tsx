@@ -20,7 +20,7 @@ interface StatusPillProps {
   dot?: boolean;
 }
 
-/** Pastilla de estado con punto de color (diseño StreamCRM). */
+/** Pastilla de estado con punto de color (diseño ValolabsCRM). */
 export function StatusPill({ kind, children, dot = true }: StatusPillProps) {
   const e = ESTADOS[kind] ?? ESTADOS.inactivo;
   return (

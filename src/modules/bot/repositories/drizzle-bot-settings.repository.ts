@@ -45,23 +45,13 @@ export class DrizzleBotSettingsRepository implements BotSettingsRepository {
   }
 
   async update(row: BotSettingsRow, command: UpdateBotSettingsCommand): Promise<void> {
-    // The timestamp is the rate's age, not the form's: re-saving the console must not rejuvenate it.
-    const exchangeRate = asRateColumn(command.exchangeRate);
-    const rateChanged = exchangeRate !== row.exchangeRate;
-
     await this.db
       .update(botSettings)
       .set({
         status: command.status,
         assistantName: command.assistantName,
+        systemPrompt: command.systemPrompt,
         personaPrompt: command.personaPrompt,
-        paymentInstructions: command.paymentInstructions,
-        exchangeRate,
-        exchangeRateUpdatedAt: rateChanged
-          ? exchangeRate === null
-            ? null
-            : new Date()
-          : row.exchangeRateUpdatedAt,
         chatModel: command.chatModel,
         temperature: command.temperature.toFixed(2),
         maxToolIterations: command.maxToolIterations,
@@ -71,7 +61,6 @@ export class DrizzleBotSettingsRepository implements BotSettingsRepository {
         handoffEnabled: command.handoffEnabled,
         handoffMinutes: command.handoffMinutes,
         autoCreateClient: command.autoCreateClient,
-        autoCreateSale: command.autoCreateSale,
         contactDailyMessageLimit: command.contactDailyMessageLimit,
       })
       .where(eq(botSettings.id, row.id));

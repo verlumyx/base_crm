@@ -8,16 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { FormSectionHead } from '@/components/form-section-head';
-import { formatDateTime } from '@/lib/format';
 import { cn } from '@/lib/utils';
-import { EXCHANGE_RATE_MAX_AGE_HOURS } from '@/modules/bot/domain/exchange-rate';
 import { useBotSettingsFormContext } from '../contexts/BotSettingsFormContext';
-
-/** Same rule the assistant applies at runtime, so the console never claims a rate the bot won't use. */
-function isRateStale(updatedAt: string | null): boolean {
-  if (!updatedAt) return false;
-  return Date.now() - new Date(updatedAt).getTime() > EXCHANGE_RATE_MAX_AGE_HOURS * 3_600_000;
-}
 
 function FieldError({ messages }: { messages?: string[] }) {
   if (!messages?.length) return null;
@@ -98,7 +90,6 @@ function NumberField({
 
 export function BotSettingsForm() {
   const { data, setData, formAction, pending, errors, settings } = useBotSettingsFormContext();
-  const rateStale = isRateStale(settings.exchangeRateUpdatedAt);
 
   return (
     <form action={formAction} className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[1fr_320px]">
@@ -106,11 +97,10 @@ export function BotSettingsForm() {
       <input type="hidden" name="status" value={data.enabled ? 'active' : 'inactive'} />
       <input type="hidden" name="handoffEnabled" value={data.handoffEnabled ? 'on' : ''} />
       <input type="hidden" name="autoCreateClient" value={data.autoCreateClient ? 'on' : ''} />
-      <input type="hidden" name="autoCreateSale" value={data.autoCreateSale ? 'on' : ''} />
 
       <div className="flex min-w-0 flex-col gap-5">
         <Card className="gap-0 overflow-hidden rounded-2xl py-0">
-          <FormSectionHead step={1} title="Asistente" sub="Identidad y tono con el que atiende" />
+          <FormSectionHead step={1} title="Asistente" sub="Identidad y propósito del asistente" />
           <div className="flex flex-col gap-4 p-5">
             <Toggle
               id="enabled"
@@ -138,6 +128,26 @@ export function BotSettingsForm() {
             </div>
 
             <div className="flex flex-col gap-1.5">
+              <Label htmlFor="systemPrompt" className="text-[13px] font-semibold">
+                Propósito del asistente
+              </Label>
+              <Textarea
+                id="systemPrompt"
+                name="systemPrompt"
+                value={data.systemPrompt}
+                onChange={(e) => setData('systemPrompt', e.target.value)}
+                placeholder="Ej. Atiendes consultas sobre nuestros servicios y agendas citas con los especialistas disponibles. Pregunta siempre el nombre y el motivo de la consulta."
+                rows={6}
+                maxLength={8000}
+                className={cn('rounded-[10px]', errors.systemPrompt && 'border-bad')}
+              />
+              <p className="text-muted-foreground text-[13px]">
+                Define qué hace el asistente y cómo debe comportarse. Se añade al inicio del prompt de sistema. Déjalo vacío para un asistente de atención general.
+              </p>
+              <FieldError messages={errors.systemPrompt} />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
               <Label htmlFor="personaPrompt" className="text-[13px] font-semibold">
                 Instrucciones del negocio
               </Label>
@@ -146,75 +156,21 @@ export function BotSettingsForm() {
                 name="personaPrompt"
                 value={data.personaPrompt}
                 onChange={(e) => setData('personaPrompt', e.target.value)}
-                placeholder="Ej. Trata de tú, ofrece siempre el plan mensual primero y menciona el descuento por dos cuentas."
-                rows={6}
+                placeholder="Ej. Trata de tú y habla de forma cercana."
+                rows={4}
                 maxLength={4000}
                 className={cn('rounded-[10px]', errors.personaPrompt && 'border-bad')}
               />
               <p className="text-muted-foreground text-[13px]">
-                Se añaden al prompt del sistema, por debajo de las reglas de seguridad: nunca pueden darle acceso a
-                datos de otra empresa ni a las credenciales de las cuentas.
+                Preferencias sobre el trato y el estilo (tuteo, formalidad, despedida). Se añaden al final del prompt, por debajo de las reglas de seguridad.
               </p>
               <FieldError messages={errors.personaPrompt} />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="paymentInstructions" className="text-[13px] font-semibold">
-                Instrucciones de pago
-              </Label>
-              <Textarea
-                id="paymentInstructions"
-                name="paymentInstructions"
-                value={data.paymentInstructions}
-                onChange={(e) => setData('paymentInstructions', e.target.value)}
-                placeholder="Ej. Pago Móvil 0102 — J-12345678 — 0412 1234567. Envía el comprobante por aquí."
-                rows={4}
-                maxLength={2000}
-                className={cn('rounded-[10px]', errors.paymentInstructions && 'border-bad')}
-              />
-              <p className="text-muted-foreground text-[13px]">
-                Es lo que responde al registrar la venta, que queda <strong>Por aprobar</strong> hasta que verifiques el
-                pago.
-              </p>
-              <FieldError messages={errors.paymentInstructions} />
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="exchangeRate" className="text-[13px] font-semibold">
-                Tasa de cambio (Bs por dólar)
-              </Label>
-              <Input
-                id="exchangeRate"
-                name="exchangeRate"
-                inputMode="decimal"
-                value={data.exchangeRate}
-                onChange={(e) => setData('exchangeRate', e.target.value)}
-                placeholder="Ej. 240,50"
-                className={cn('h-[42px] rounded-[10px]', errors.exchangeRate && 'border-bad')}
-              />
-              <p className="text-muted-foreground text-[13px]">
-                Los precios se manejan en dólares. Con una tasa cargada, el bot dice el monto en bolívares calculado
-                por el sistema — nunca lo estima él. Déjala vacía si no vendes en bolívares.
-              </p>
-              {settings.exchangeRateUpdatedAt && (
-                <p
-                  className={cn(
-                    'text-[13px]',
-                    rateStale ? 'text-bad font-semibold' : 'text-muted-foreground',
-                  )}
-                >
-                  {rateStale
-                    ? `Vencida: se cargó el ${formatDateTime(settings.exchangeRateUpdatedAt)}. El bot dejó de cotizar en bolívares hasta que la actualices.`
-                    : `Actualizada el ${formatDateTime(settings.exchangeRateUpdatedAt)}. Vence a las ${EXCHANGE_RATE_MAX_AGE_HOURS} horas.`}
-                </p>
-              )}
-              <FieldError messages={errors.exchangeRate} />
             </div>
           </div>
         </Card>
 
         <Card className="gap-0 overflow-hidden rounded-2xl py-0">
-          <FormSectionHead step={2} title="Ventas" sub="Qué puede hacer el bot por su cuenta" />
+          <FormSectionHead step={2} title="Automatización" sub="Qué puede hacer el bot por su cuenta" />
           <div className="flex flex-col gap-4 p-5">
             <Toggle
               id="autoCreateClient"
@@ -222,13 +178,6 @@ export function BotSettingsForm() {
               hint="Si el contacto no existe en el CRM, el bot puede crearlo con su nombre y teléfono."
               checked={data.autoCreateClient}
               onChange={(v) => setData('autoCreateClient', v)}
-            />
-            <Toggle
-              id="autoCreateSale"
-              label="Registrar ventas por aprobar"
-              hint="El bot cierra la venta en estado Por aprobar; nadie entrega credenciales hasta que verifiques el pago."
-              checked={data.autoCreateSale}
-              onChange={(v) => setData('autoCreateSale', v)}
             />
             <Toggle
               id="handoffEnabled"
@@ -276,7 +225,7 @@ export function BotSettingsForm() {
               id="temperature"
               name="temperature"
               label="Temperatura"
-              hint="0 = siempre la misma respuesta. Para vender, mantenla baja."
+              hint="0 = respuestas más consistentes. Valores más altos = más variedad."
               value={data.temperature}
               onChange={(v) => setData('temperature', v)}
               min={0}

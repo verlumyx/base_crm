@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { ArrowLeftIcon } from '@/app/(auth)/_components/AuthIcons';
-import { StreamCrmLogo } from '@/app/(auth)/_components/StreamCrmLogo';
+import { AppLogo } from '@/app/(auth)/_components/AuthLogo';
 
-export const SUPPORT_EMAIL = 'soporte@streamcrm.cl';
+export const SUPPORT_EMAIL = 'soporte@valolabscrm.com';
 
 interface AuthBrand {
   title: string;
@@ -27,7 +27,7 @@ export function AuthShell({ brand, top = 'back', children }: AuthShellProps) {
     <div className="auth">
       <aside className="auth-brand">
         <Link className="logo" href="/login">
-          <StreamCrmLogo />
+          <AppLogo />
         </Link>
         <div className="auth-brand-body">
           <h2>{brand.title}</h2>
@@ -63,13 +63,13 @@ export function AuthShell({ brand, top = 'back', children }: AuthShellProps) {
                 <ArrowLeftIcon /> Volver a iniciar sesión
               </Link>
               <Link className="logo" href="/login">
-                <StreamCrmLogo simple />
+                <AppLogo simple />
               </Link>
             </>
           ) : (
             <>
               <Link className="logo" href="/login">
-                <StreamCrmLogo simple />
+                <AppLogo simple />
               </Link>
               <span className="alt">
                 ¿Necesitas una cuenta? <a href={`mailto:${SUPPORT_EMAIL}`}>Contáctanos</a>

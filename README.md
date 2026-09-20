@@ -1,126 +1,94 @@
-# streaming_crm
+# ValolabsCRM - Guía de Instalación y Uso
 
-CRM para la venta y gestión de cuentas de streaming. Multi-tenant por compañía.
+CRM genérico multi-tenant con asistente IA integrado. Cada empresa configura el propósito y comportamiento de su asistente virtual para interactuar a través de WhatsApp y Telegram.
 
-Next.js (App Router) + TypeScript · PostgreSQL + Drizzle ORM · better-auth · Tailwind CSS v4 + shadcn/ui · Vitest + Playwright.
+## Requisitos Previos
 
-## Requisitos
+- **Node.js** (v20 o superior)
+- **pnpm** (`npm install -g pnpm`)
+- **Docker y Docker Compose** (para levantar PostgreSQL + pgvector)
 
-- Node.js 22+
-- pnpm 12 (`corepack enable` o `npm i -g pnpm`)
-- Docker con Docker Compose
+## 1. Instalación y Levantamiento
 
-## Levantar la aplicación
+1. **Clonar el proyecto** e instalar dependencias:
 
-```bash
-# 1. Instalar dependencias
-pnpm install
+   ```bash
+   pnpm install
+   ```
 
-# 2. Variables de entorno
-cp .env.example .env
-#    Cambia BETTER_AUTH_SECRET por un valor aleatorio:
-#    openssl rand -base64 32
+2. **Levantar la base de datos**:
 
-# 3. Levantar PostgreSQL (también crea las bases de datos de test)
-docker compose up -d
+   ```bash
+   docker-compose up -d postgres
+   ```
 
-# 4. Aplicar migraciones (base de la app y base de test)
-pnpm db:migrate
-pnpm db:migrate --test
+3. **Configurar variables de entorno**:
+   Copia el archivo de ejemplo y configura las claves principales.
 
-# 5. Sembrar módulos, permisos, menú, empresa inicial y usuario administrador
-pnpm db:seed
+   ```bash
+   cp .env.example .env
+   ```
 
-# 6. Servidor de desarrollo
-pnpm dev
-```
+   > Abre el archivo `.env` y asegúrate de que `DATABASE_URL` apunte a tu base de datos local. Por defecto, expone el puerto 5436.
 
-La aplicación queda en http://localhost:3000.
+4. **Ejecutar migraciones de la base de datos**:
 
-### Usuario inicial
+   ```bash
+   pnpm db:generate
+   pnpm db:migrate
+   ```
 
-| Email                 | Password   |
-| --------------------- | ---------- |
-| `admin@miempresa.com` | `password` |
+5. **Iniciar el servidor y el worker del bot**:
+   ```bash
+   pnpm dev
+   ```
+   _Esto iniciará la aplicación en `http://localhost:3000` y el procesador de mensajes del bot en segundo plano._
 
-Pertenece a la empresa **Mi Empresa** y es propietario del sistema. `pnpm db:seed` es idempotente: puede volver a ejecutarse para registrar permisos o menús nuevos sin duplicar la empresa inicial.
+## 2. Variables de Entorno Clave (`.env`)
 
-## Base de datos
+- **Básicas**:
+  - `NEXT_PUBLIC_APP_URL`: URL base del sistema (ej. `http://localhost:3000`).
+  - `BETTER_AUTH_SECRET`: Secreto criptográfico de 32 caracteres para el manejo de sesiones.
+  - `APP_ENCRYPTION_KEY`: Clave de 32 caracteres usada para encriptar los tokens de WhatsApp y Telegram en la base de datos.
+- **Inteligencia Artificial**:
+  - `BOT_AI_PROVIDER`: Puede ser `gemini` o `azure`.
+  - `GOOGLE_API_KEY`: API Key de Google AI Studio. Es obligatoria si usas Gemini (`BOT_AI_PROVIDER=gemini`).
+  - `BOT_CHAT_MODELS`: Modelo a usar para generar las respuestas (ej. `gemini-2.5-flash-lite`).
 
-Postgres corre en Docker (`streaming_crm_postgres`):
+## 3. Configuración del Bot IA (Panel Web)
 
-| Campo         | Valor           |
-| ------------- | --------------- |
-| Host          | `localhost`     |
-| Puerto        | `5436`          |
-| Usuario       | `streaming_crm` |
-| Password      | `streaming_crm` |
-| Base de datos | `streaming_crm` |
+Una vez inicies sesión en ValolabsCRM, el bot requiere configurarse para empezar a operar. Consta de 3 partes fundamentales:
 
-Bases adicionales con las mismas credenciales:
+### A. Configuración General (Identidad del Asistente)
 
-- `streaming_crm_test`: tests de integración (se vacían en cada ejecución).
-- `streaming_crm_test_a` … `streaming_crm_test_f`: una por proceso de test en paralelo.
+Ve a **Asistente IA > Configuración** y ajusta estos campos:
 
-```bash
-# Consola psql
-docker exec -it streaming_crm_postgres psql -U streaming_crm -d streaming_crm
-```
+- **Asistente activo**: Si está apagado, los mensajes llegan a la bandeja de entrada pero no son respondidos de forma automática.
+- **Nombre del asistente**: El nombre con el que se presentará (ej. _Carlos_ o _Asistencia Virtual_).
+- **Propósito del asistente**: El núcleo del bot. Define qué hace la empresa, qué servicio ofrece y cómo debe operar el bot.
+  - _Ejemplo:_ "Eres el asistente de una clínica odontológica. Tu objetivo es responder dudas usando la base de conocimiento y agendar citas. Solicita siempre el nombre del paciente y su motivo de consulta."
+- **Instrucciones del negocio**: Reglas de tono, estilo y personalidad que van al final del prompt.
+  - _Ejemplo:_ "Trata al cliente de tú, sé amable, conciso y utiliza emojis moderadamente. Nunca menciones a la competencia."
 
-Las tablas de la app llevan el prefijo `app_`. Las de better-auth no lo llevan: `users`, `sessions`, `accounts`, `two_factors` y `verifications`.
+### B. Base de Conocimiento (RAG)
 
-> Las bases de test las crea `docker/postgres/init/01-test-db.sql` **solo al crear el volumen**. Si el volumen ya existía sin ellas, recréalo con `docker compose down -v && docker compose up -d` (esto borra los datos locales).
+El bot está restringido de inventar información (alucinaciones). Para que responda dudas sobre tu negocio, debes nutrir su conocimiento:
 
-## Variables de entorno
+1. Ve a **Asistente IA > Base de Conocimiento**.
+2. Sube documentos (TXT, Markdown, PDF) con catálogos, políticas, precios, FAQs, o procesos.
+3. El sistema particionará el documento y guardará la información vectorizada en base de datos.
+4. Cuando un cliente haga una pregunta, el bot buscará el contexto necesario de estos documentos y lo incluirá en su respuesta.
 
-| Variable                      | Descripción                                                  |
-| ----------------------------- | ------------------------------------------------------------ |
-| `NEXT_PUBLIC_APP_URL`         | URL pública de la app                                        |
-| `APP_TIMEZONE`                | Zona horaria para fechas de negocio (`America/Panama`)       |
-| `DATABASE_URL`                | Conexión a la base de la app                                 |
-| `DATABASE_URL_TEST`           | Conexión a la base de test (Vitest la usa automáticamente)   |
-| `BETTER_AUTH_SECRET`          | Secreto de sesiones (mínimo 32 caracteres, aleatorio)        |
-| `BETTER_AUTH_URL`             | URL base de better-auth (igual a la URL de la app)           |
-| `BETTER_AUTH_TRUSTED_ORIGINS` | Orígenes adicionales permitidos, separados por coma          |
-| `SALES_GRACE_PERIOD_DAYS`     | Días de gracia antes de expirar una venta vencida            |
+### C. Canales de Comunicación
 
-### Puerto distinto de 3000
+Para recibir mensajes, debes enlazar una cuenta de red social:
 
-Si el 3000 está ocupado, `pnpm dev` usa el siguiente libre (p. ej. 3001). En ese caso ajusta `NEXT_PUBLIC_APP_URL` y `BETTER_AUTH_URL` a esa URL, o agrégala en `BETTER_AUTH_TRUSTED_ORIGINS`; si no, el login falla por origen no confiable.
+- Ve a **Asistente IA > Canales** y añade un canal.
+- **Telegram (Recomendado para desarrollo local)**: Mucho más rápido y fácil de probar. Crea un bot hablando con `@BotFather` en Telegram, obtén el token de acceso e ingrésalo. El sistema enlazará el webhook automáticamente.
+- **WhatsApp Cloud API**: Requiere configurar una app en Meta for Developers, obtener un Token Permanente y apuntar el Webhook de Meta a la URL pública de tu CRM (`https://tu-dominio.com/api/bot/whatsapp`).
 
-## Tests
+## 4. Bandeja de Entrada y Handoff
 
-```bash
-pnpm test                      # Vitest: unit + integración
-pnpm test:unit                 # solo unit
-pnpm test:integration          # solo integración (requiere la base de test migrada)
-pnpm vitest run <archivo>      # un archivo
+En el módulo de **Mensajes**, podrás ver todas las conversaciones de los clientes. El bot marca automáticamente si está manejando él la conversación o si requiere atención de un operador (`handoff`).
 
-pnpm exec playwright install chromium   # solo la primera vez
-pnpm test:e2e                            # Playwright (levanta `pnpm dev` si no está corriendo)
-PLAYWRIGHT_BASE_URL=http://localhost:3001 pnpm test:e2e   # contra un dev server ya levantado en otro puerto
-```
-
-Los specs e2e inician sesión con el usuario del seed, así que la base de la app debe estar sembrada.
-
-## Comandos
-
-| Comando              | Descripción                                        |
-| -------------------- | -------------------------------------------------- |
-| `pnpm dev`           | Servidor de desarrollo                             |
-| `pnpm build`         | Build de producción                                |
-| `pnpm start`         | Servir el build de producción                      |
-| `pnpm lint`          | ESLint                                             |
-| `pnpm typecheck`     | `tsc --noEmit`                                     |
-| `pnpm format`        | Prettier                                           |
-| `pnpm db:generate`   | Generar migración a partir de los modelos Drizzle  |
-| `pnpm db:migrate`    | Aplicar migraciones (`--test` para la base de test) |
-| `pnpm db:seed`       | Sembrar módulos, permisos, menú y empresa inicial  |
-| `pnpm sales:expire`  | Expirar ventas vencidas (programar diario por cron) |
-
-## Documentación
-
-- `docs/estructura.md`, `docs/modulos.md`, `docs/guia.md`: dominio y arquitectura.
-- `docs/reporte-*.md`: reportes.
-- `docs/mapa-laravel-nextjs.md`: equivalencias con el proyecto Laravel original.
-- `CLAUDE.md`: convenciones del proyecto.
+- Si configuras **"Permitir escalar a un humano"** en la configuración, el bot pausará sus intervenciones y pedirá ayuda si el usuario dice "quiero hablar con un humano" o si el bot agota sus herramientas sin llegar a una solución.

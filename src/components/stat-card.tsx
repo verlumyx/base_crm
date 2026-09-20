@@ -20,7 +20,7 @@ interface StatCardProps {
   tone?: StatTone;
 }
 
-/** Tarjeta de métrica del dashboard (diseño StreamCRM). */
+/** Tarjeta de métrica del dashboard (diseño ValolabsCRM). */
 export function StatCard({ icon: Icon, label, value, sub, trend, tone = 'default' }: StatCardProps) {
   return (
     <Card className="relative gap-1 overflow-hidden rounded-2xl p-5">

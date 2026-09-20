@@ -1,6 +1,6 @@
-# streaming_crm
+# valolabscrm
 
-CRM para la venta y gestión de cuentas de streaming (clientes, catálogo de servicios y planes, inventario de cuentas y perfiles, ventas, finanzas, soporte). Multi-tenant por compañía.
+CRM genérico multi-tenant con asistente IA integrado (clientes, reclamos, finanzas, base de conocimiento y chatbot configurable por WhatsApp/Telegram). Cada empresa configura el propósito y comportamiento de su asistente.
 
 ## Stack
 

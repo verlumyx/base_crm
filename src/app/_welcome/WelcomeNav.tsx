@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { StreamCrmLogo } from '@/components/streamcrm-logo';
+import { AppLogo } from '@/components/app-logo';
 
 type Props = { panelHref: string; panelLabel: string; contactHref: string };
 
@@ -14,7 +14,7 @@ export function WelcomeNav({ panelHref, panelLabel, contactHref }: Props) {
     <header className="site-nav">
       <div className="wrap nav-inner">
         <Link className="logo" href="/">
-          <StreamCrmLogo />
+          <AppLogo />
         </Link>
         <nav className={navOpen ? 'nav-links open' : 'nav-links'}>
           <a href="#funciones">Funciones</a>

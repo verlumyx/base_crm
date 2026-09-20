@@ -7,7 +7,7 @@ interface FormSectionHeadProps {
   children?: ReactNode;
 }
 
-/** Cabecera numerada de sección de formulario (diseño StreamCRM). */
+/** Cabecera numerada de sección de formulario (diseño ValolabsCRM). */
 export function FormSectionHead({ step, title, sub, children }: FormSectionHeadProps) {
   return (
     <div className="flex items-center gap-3 border-b p-5">

@@ -8,8 +8,8 @@ export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
 export const INCOME_CATEGORIES = ['sale', 'renewal', 'partner_contribution', 'other_income'] as const;
 export const EXPENSE_CATEGORIES = [
-  'streaming_account',
-  'streaming_account_renewal',
+  'supplies',
+  'subscription',
   'petty_cash',
   'salary',
   'commission',
@@ -29,8 +29,8 @@ export const TRANSACTION_CATEGORY_LABELS: Record<TransactionCategory, string> = 
   renewal: 'Renovación',
   partner_contribution: 'Aporte de socio',
   other_income: 'Otro ingreso',
-  streaming_account: 'Cuenta de streaming',
-  streaming_account_renewal: 'Renovación de cuenta',
+  supplies: 'Insumos',
+  subscription: 'Suscripción',
   petty_cash: 'Caja chica',
   salary: 'Salario',
   commission: 'Comisión',
@@ -42,7 +42,7 @@ export const TRANSACTION_CATEGORY_LABELS: Record<TransactionCategory, string> = 
 };
 
 /** Short polymorphic aliases stored in `related_type`. */
-export const RELATED_TYPES = ['Account', 'Sale', 'Refund', 'ManualTransaction'] as const;
+export const RELATED_TYPES = ['ManualTransaction'] as const;
 export type RelatedType = (typeof RELATED_TYPES)[number];
 
 export function typeForCategory(category: string): TransactionType {
@@ -104,7 +104,7 @@ export const transactions = pgTable(
     check('app_transactions_type_check', sql`${t.type} in ('income', 'expense')`),
     check(
       'app_transactions_category_check',
-      sql`${t.category} in ('sale', 'renewal', 'partner_contribution', 'other_income', 'streaming_account', 'streaming_account_renewal', 'petty_cash', 'salary', 'commission', 'utilities', 'tools', 'marketing', 'refund', 'other_expense')`,
+      sql`${t.category} in ('sale', 'renewal', 'partner_contribution', 'other_income', 'supplies', 'subscription', 'petty_cash', 'salary', 'commission', 'utilities', 'tools', 'marketing', 'refund', 'other_expense')`,
     ),
     check('app_transactions_amount_check', sql`${t.amount} >= 0`),
   ],

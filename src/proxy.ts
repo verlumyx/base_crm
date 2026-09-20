@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 import { getSessionCookie } from 'better-auth/cookies';
 
 /** Must match `advanced.cookiePrefix` in `src/lib/auth.ts`. */
-const COOKIE_PREFIX = 'streaming-crm';
+const COOKIE_PREFIX = 'valolabs-crm';
 
 const PUBLIC_PATHS = [
   '/login',

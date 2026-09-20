@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Streaming CRM',
-    template: '%s - Streaming CRM',
+    default: 'ValolabsCRM',
+    template: '%s - ValolabsCRM',
   },
   description: 'CRM para la venta y gestión de cuentas de streaming',
 };

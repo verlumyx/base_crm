@@ -17,7 +17,7 @@ interface InitialsAvatarProps {
   size?: number;
 }
 
-/** Avatar con iniciales y color derivado del nombre (diseño StreamCRM). */
+/** Avatar con iniciales y color derivado del nombre (diseño ValolabsCRM). */
 export function InitialsAvatar({ name, size = 38 }: InitialsAvatarProps) {
   let h = 0;
   for (const c of name) {

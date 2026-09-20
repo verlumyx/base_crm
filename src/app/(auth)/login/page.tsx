@@ -27,11 +27,11 @@ export default async function LoginPage({
     <AuthShell
       top="contact"
       brand={{
-        title: 'Tu negocio de streaming, bajo control.',
-        text: 'Clientes, perfiles, vencimientos y cobros — todo en un panel. Entra y sigue vendiendo con orden.',
+        title: 'Tu negocio, bajo control.',
+        text: 'Clientes, tickets, finanzas y configuración en un solo panel. Entra y sigue gestionando con orden.',
         quote:
-          '“Antes llevaba todo en cuadernos y notas del teléfono. Ahora sé al instante quién me debe y qué vence.”',
-        quoteBy: 'Vendedor independiente, Santiago',
+          '“Antes llevaba todo en cuadernos y notas del teléfono. Ahora sé al instante quién me debe y qué debo hacer.”',
+        quoteBy: 'Propietario independiente',
         showStats: true,
       }}
     >

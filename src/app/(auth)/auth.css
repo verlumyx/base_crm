@@ -1,4 +1,4 @@
-/* StreamCRM auth pages — ported from the original public site `site.css`, scoped under `.auth`
+/* ValolabsCRM auth pages — ported from the original public site `site.css`, scoped under `.auth`
    with `--sc-*` tokens so it never collides with the shadcn/Tailwind theme variables. */
 .auth {
   --sc-brand: #4f46e5;

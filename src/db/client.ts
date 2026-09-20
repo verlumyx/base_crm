@@ -9,12 +9,12 @@ if (!connectionString) {
 }
 
 declare global {
-  var __streamingCrmSql: ReturnType<typeof postgres> | undefined;
+  var __valolabsCrmSql: ReturnType<typeof postgres> | undefined;
 }
 
 // Reuse the connection pool across HMR reloads in development.
-const sql = globalThis.__streamingCrmSql ?? postgres(connectionString, { max: 10, prepare: false });
-if (process.env.NODE_ENV !== 'production') globalThis.__streamingCrmSql = sql;
+const sql = globalThis.__valolabsCrmSql ?? postgres(connectionString, { max: 10, prepare: false });
+if (process.env.NODE_ENV !== 'production') globalThis.__valolabsCrmSql = sql;
 
 export const db = drizzle(sql, { schema, casing: 'snake_case' });
 

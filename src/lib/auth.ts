@@ -7,7 +7,7 @@ import * as schema from '@/db/schema';
 import { uuidv7 } from '@/modules/shared/uuid';
 
 export const auth = betterAuth({
-  appName: 'Streaming CRM',
+  appName: 'ValolabsCRM',
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,
   // Extra origins allowed to call the auth API (comma separated). In development the dev server
@@ -49,7 +49,7 @@ export const auth = betterAuth({
   },
   advanced: {
     database: { generateId: () => uuidv7() },
-    cookiePrefix: 'streaming-crm',
+    cookiePrefix: 'valolabs-crm',
   },
   rateLimit: {
     enabled: true,
@@ -61,7 +61,7 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    twoFactor({ issuer: 'Streaming CRM' }),
+    twoFactor({ issuer: 'ValolabsCRM' }),
     admin(),
     nextCookies(), // must be last
   ],

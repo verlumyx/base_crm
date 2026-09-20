@@ -5,7 +5,7 @@ interface ProgressRingProps {
   stroke?: number;
 }
 
-/** Anillo de progreso SVG con valor central (diseño StreamCRM). */
+/** Anillo de progreso SVG con valor central (diseño ValolabsCRM). */
 export function ProgressRing({ value, total, size = 132, stroke = 13 }: ProgressRingProps) {
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;

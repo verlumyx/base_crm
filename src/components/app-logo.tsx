@@ -1,21 +1,28 @@
-import { Sparkles } from 'lucide-react';
-
-export function AppLogo() {
+/**
+ * ValolabsCRM brand lockup used across the public site (landing + auth).
+ * `simple` renders only the primary spark glyph (used inside compact spots);
+ * the default renders the spark + secondary sparkle as in the brand panel.
+ * Las clases `logo-mark` / `logo-txt` vienen de `public/css/site.css`.
+ */
+export function AppLogo({ simple = false }: { simple?: boolean }) {
   return (
     <>
-      <div
-        className="flex aspect-square size-8 items-center justify-center rounded-[11px] text-white shadow-[0_6px_16px_color-mix(in_srgb,var(--primary)_35%,transparent)]"
-        style={{
-          background: 'linear-gradient(135deg, #5b54ec, #3f8bff)',
-        }}
-      >
-        <Sparkles className="size-4.5" />
-      </div>
-      <div className="ml-1 grid flex-1 text-left">
-        <span className="text-sidebar-accent-foreground truncate text-base leading-tight font-semibold tracking-tight">
-          Stream<b className="font-extrabold">CRM</b>
-        </span>
-      </div>
+      <span className="logo-mark">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 3l1.8 4.7L18.5 9l-4.7 1.3L12 15l-1.8-4.7L5.5 9l4.7-1.3L12 3Z" />
+          {!simple && <path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z" />}
+        </svg>
+      </span>
+      <span className="logo-txt">
+        Stream<b>CRM</b>
+      </span>
     </>
   );
 }

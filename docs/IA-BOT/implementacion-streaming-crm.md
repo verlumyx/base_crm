@@ -375,7 +375,7 @@ Corre con `tsx --conditions=react-server` porque vive fuera de Next: sin esa con
 
 | Variable | Para qué |
 |---|---|
-| `GOOGLE_API_KEY` | Chat y embeddings de Gemini. Sin ella el worker sale con error claro en vez de ensuciar el log cada 2 s. |
+| `GOOGLE_API_KEY` | Chat y embeddings de Gemini. Obligatoria sólo si `BOT_AI_PROVIDER=gemini`. Sin ella el worker sale con error. |
 | `BOT_CHAT_MODELS` | Cadena de respaldo separada por comas. El modelo de la empresa siempre va primero. |
 | `BOT_EMBEDDING_MODEL` / `BOT_EMBEDDING_DIMENSIONS` | Deben coincidir con la columna `vector(768)`; cambiarlas invalida todos los chunks. |
 | `BOT_WORKER_SECRET` / `BOT_WORKER_BATCH_SIZE` / `BOT_WORKER_POLL_MS` / `BOT_WORKER_STUCK_MINUTES` | Worker y endpoint de cron. |

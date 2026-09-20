@@ -9,10 +9,8 @@ import type { BotSettingsDto } from '@/modules/bot/serializers/bot-settings.seri
 export type BotSettingsFormData = {
   enabled: boolean;
   assistantName: string;
+  systemPrompt: string;
   personaPrompt: string;
-  paymentInstructions: string;
-  /** Kept as text so an empty field means "no rate" instead of 0. */
-  exchangeRate: string;
   chatModel: string;
   temperature: number;
   maxToolIterations: number;
@@ -22,7 +20,6 @@ export type BotSettingsFormData = {
   handoffEnabled: boolean;
   handoffMinutes: number;
   autoCreateClient: boolean;
-  autoCreateSale: boolean;
   contactDailyMessageLimit: number;
 };
 
@@ -30,9 +27,8 @@ export function useBotSettingsForm(companyId: string, settings: BotSettingsDto) 
   const [data, setDataState] = useState<BotSettingsFormData>(() => ({
     enabled: settings.status === 'active',
     assistantName: settings.assistantName,
+    systemPrompt: settings.systemPrompt ?? '',
     personaPrompt: settings.personaPrompt ?? '',
-    paymentInstructions: settings.paymentInstructions ?? '',
-    exchangeRate: settings.exchangeRate === null ? '' : String(settings.exchangeRate),
     chatModel: settings.chatModel,
     temperature: settings.temperature,
     maxToolIterations: settings.maxToolIterations,
@@ -42,7 +38,6 @@ export function useBotSettingsForm(companyId: string, settings: BotSettingsDto) 
     handoffEnabled: settings.handoffEnabled,
     handoffMinutes: settings.handoffMinutes,
     autoCreateClient: settings.autoCreateClient,
-    autoCreateSale: settings.autoCreateSale,
     contactDailyMessageLimit: settings.contactDailyMessageLimit,
   }));
 

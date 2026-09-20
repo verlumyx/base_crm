@@ -29,6 +29,8 @@ export const botSettings = pgTable(
       .references(() => user.id, { onDelete: 'restrict' }),
     status: varchar('status', { length: 20 }).notNull().default('inactive').$type<BotSettingsStatus>(),
     assistantName: varchar('assistant_name', { length: 100 }).notNull().default('Asistente'),
+    /** The core purpose of the assistant. Replaces hardcoded system rules. */
+    systemPrompt: text('system_prompt'),
     /** Business instructions written by the admin. Always subordinate to the system rules. */
     personaPrompt: text('persona_prompt'),
     /** What the bot replies once the sale is registered and waiting for payment verification. */

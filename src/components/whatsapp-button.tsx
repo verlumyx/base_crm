@@ -9,7 +9,7 @@ interface WhatsAppButtonProps {
   size?: 'sm' | 'md';
 }
 
-/** Botón de acción rápida de WhatsApp (verde suave, diseño StreamCRM). */
+/** Botón de acción rápida de WhatsApp (verde suave, diseño ValolabsCRM). */
 export function WhatsAppButton({ tel, label = 'Enviar WhatsApp', size = 'md' }: WhatsAppButtonProps) {
   return (
     <a

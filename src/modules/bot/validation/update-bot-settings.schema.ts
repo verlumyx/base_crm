@@ -30,9 +30,8 @@ const boundedNumber = (label: string, min: number, max: number) =>
 export const updateBotSettingsSchema = z.object({
   status: z.enum(BOT_SETTINGS_STATUSES, { message: 'El estado no es válido.' }),
   assistantName: requiredText('El nombre del asistente', 100),
+  systemPrompt: optionalText('El propósito del asistente', 8000),
   personaPrompt: optionalText('Las instrucciones del negocio', 4000),
-  paymentInstructions: optionalText('Las instrucciones de pago', 2000),
-  exchangeRate: optionalRate('La tasa de cambio', 9_999_999_999),
   chatModel: requiredText('El modelo de chat', 60),
   temperature: boundedNumber('La temperatura', 0, 2),
   maxToolIterations: boundedNumber('El máximo de iteraciones', 1, 12),
@@ -42,7 +41,6 @@ export const updateBotSettingsSchema = z.object({
   handoffEnabled: checkbox,
   handoffMinutes: boundedNumber('Los minutos de atención humana', 5, 1440),
   autoCreateClient: checkbox,
-  autoCreateSale: checkbox,
   contactDailyMessageLimit: boundedNumber('El límite diario por contacto', 1, 5000),
 });
 

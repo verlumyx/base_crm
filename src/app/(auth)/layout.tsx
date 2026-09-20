@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import './auth.css';
 
 export const metadata: Metadata = {
-  title: { template: '%s — StreamCRM', default: 'StreamCRM' },
+  title: { template: '%s — ValolabsCRM', default: 'ValolabsCRM' },
 };
 
 /** Toasts come from the single global `<Toaster />` in the root layout; mounting another one duplicates them. */

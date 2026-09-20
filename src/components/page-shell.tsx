@@ -18,7 +18,7 @@ interface PageShellProps {
 }
 
 /**
- * Contenedor común de las páginas de módulo (diseño StreamCRM):
+ * Contenedor común de las páginas de módulo (diseño ValolabsCRM):
  * título grande, subtítulo y acciones a la derecha.
  */
 export function PageShell({ title, subtitle, actions, back, children, className }: PageShellProps) {

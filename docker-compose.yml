@@ -2,7 +2,7 @@ services:
   postgres:
     build:
       context: ./docker/postgres
-    image: streaming-crm-postgres:16-pgvector
+    image: valolabs-crm-postgres:16-pgvector
     container_name: streaming_crm_postgres
     restart: unless-stopped
     environment:

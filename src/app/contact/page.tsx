@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { LeadContact } from '@/modules/lead/ui/components/LeadContact';
 
-export const metadata: Metadata = { title: { absolute: 'Contáctenos — StreamCRM' } };
+export const metadata: Metadata = { title: { absolute: 'Contáctenos — ValolabsCRM' } };
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 

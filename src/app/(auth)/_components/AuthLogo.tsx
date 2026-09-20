@@ -1,10 +1,8 @@
 /**
- * StreamCRM brand lockup used across the public site (landing + auth).
- * `simple` renders only the primary spark glyph (used inside compact spots);
+ * ValolabsCRM brand lockup. `simple` renders only the primary spark glyph (compact spots);
  * the default renders the spark + secondary sparkle as in the brand panel.
- * Las clases `logo-mark` / `logo-txt` vienen de `public/css/site.css`.
  */
-export function StreamCrmLogo({ simple = false }: { simple?: boolean }) {
+export function AppLogo({ simple = false }: { simple?: boolean }) {
   return (
     <>
       <span className="logo-mark">
@@ -15,6 +13,7 @@ export function StreamCrmLogo({ simple = false }: { simple?: boolean }) {
           strokeWidth="1.8"
           strokeLinecap="round"
           strokeLinejoin="round"
+          aria-hidden="true"
         >
           <path d="M12 3l1.8 4.7L18.5 9l-4.7 1.3L12 15l-1.8-4.7L5.5 9l4.7-1.3L12 3Z" />
           {!simple && <path d="M19 14l.8 2.2L22 17l-2.2.8L19 20l-.8-2.2L16 17l2.2-.8L19 14Z" />}
@@ -26,5 +25,3 @@ export function StreamCrmLogo({ simple = false }: { simple?: boolean }) {
     </>
   );
 }
-
-export default StreamCrmLogo;

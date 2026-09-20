@@ -6,10 +6,8 @@ export class UpdateBotSettingsCommand {
     readonly companyId: string,
     readonly status: BotSettingsStatus,
     readonly assistantName: string,
+    readonly systemPrompt: string | null,
     readonly personaPrompt: string | null,
-    readonly paymentInstructions: string | null,
-    /** Bolívares per dollar, or `null` when the company does not quote in bolívares. */
-    readonly exchangeRate: number | null,
     readonly chatModel: string,
     readonly temperature: number,
     readonly maxToolIterations: number,
@@ -19,7 +17,6 @@ export class UpdateBotSettingsCommand {
     readonly handoffEnabled: boolean,
     readonly handoffMinutes: number,
     readonly autoCreateClient: boolean,
-    readonly autoCreateSale: boolean,
     readonly contactDailyMessageLimit: number,
   ) {}
 
@@ -28,9 +25,8 @@ export class UpdateBotSettingsCommand {
       companyId,
       input.status,
       input.assistantName,
+      input.systemPrompt,
       input.personaPrompt,
-      input.paymentInstructions,
-      input.exchangeRate,
       input.chatModel,
       input.temperature,
       input.maxToolIterations,
@@ -40,7 +36,6 @@ export class UpdateBotSettingsCommand {
       input.handoffEnabled,
       input.handoffMinutes,
       input.autoCreateClient,
-      input.autoCreateSale,
       input.contactDailyMessageLimit,
     );
   }

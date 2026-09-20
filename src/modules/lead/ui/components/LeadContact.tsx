@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { StreamCrmLogo } from '@/components/streamcrm-logo';
+import { AppLogo } from '@/components/app-logo';
 import { LeadCreate } from './LeadCreate';
 
 export const LEAD_SENT_MESSAGE = 'Gracias por contactarnos. Te responderemos pronto.';
@@ -14,12 +14,12 @@ export function LeadContact({ sent }: { sent: boolean }) {
       <div className="auth">
         <aside className="auth-brand">
           <Link className="logo" href="/">
-            <StreamCrmLogo />
+            <AppLogo />
           </Link>
           <div className="auth-brand-body">
             <h2>Hablemos de tu negocio.</h2>
             <p>
-              Déjanos tus datos y te contactamos para mostrarte cómo StreamCRM ordena tus clientes, perfiles y
+              Déjanos tus datos y te contactamos para mostrarte cómo ValolabsCRM ordena tus clientes, perfiles y
               cobros en un solo lugar.
             </p>
             <div className="auth-quote">
@@ -47,7 +47,7 @@ export function LeadContact({ sent }: { sent: boolean }) {
               Volver al inicio
             </Link>
             <Link className="logo" href="/">
-              <StreamCrmLogo simple />
+              <AppLogo simple />
             </Link>
           </div>
 
