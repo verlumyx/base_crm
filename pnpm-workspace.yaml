@@ -1,0 +1,8 @@
+allowBuilds:
+  esbuild: true
+  "@tailwindcss/oxide": true
+  sharp: true
+  unrs-resolver: true
+  # Neither postinstall is needed at runtime; the SDK is verified working without them.
+  '@google/genai': false
+  protobufjs: false
