@@ -33,10 +33,16 @@ export class BotQueueDrainService {
     for (const event of events) {
       try {
         const outcome = await this.processor.execute(event);
-        if (outcome === 'discarded') await this.repository.markDiscarded(event.id, 'Canal o configuración ausente.');
-        else await this.repository.markCompleted(event.id);
-
-        report[outcome === 'answered' ? 'answered' : outcome === 'silenced' ? 'silenced' : 'discarded']++;
+        if (typeof outcome === 'object' && outcome.outcome === 'discarded') {
+          await this.repository.markDiscarded(event.id, outcome.reason);
+          report.discarded++;
+        } else if (outcome === 'discarded') {
+          await this.repository.markDiscarded(event.id, 'Canal o configuración ausente.');
+          report.discarded++;
+        } else {
+          await this.repository.markCompleted(event.id);
+          report[outcome === 'answered' ? 'answered' : 'silenced']++;
+        }
       } catch (error) {
         const landed = await this.repository.markFailed(event, error instanceof Error ? error.message : String(error));
         report[landed]++;

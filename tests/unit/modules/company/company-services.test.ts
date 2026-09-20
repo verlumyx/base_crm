@@ -10,7 +10,7 @@ import { UpdateCompanyCommand } from '@/modules/company/commands/update-company.
 import { UpdateStatusCompanyCommand } from '@/modules/company/commands/update-status-company.command';
 import { CompanyNameAlreadyExistsException } from '@/modules/company/exceptions/company-name-already-exists.exception';
 import { CompanyNotFoundException } from '@/modules/company/exceptions/company-not-found.exception';
-import { FakeCompanyRepository, FakeCompanyServicesSeeder } from './fake-company.repository';
+import { FakeCompanyRepository } from './fake-company.repository';
 
 const OWNER = '0192f3a0-0000-7000-8000-0000000000aa';
 const ID_1 = '0192f3a0-0000-7000-8000-000000000001';
@@ -21,13 +21,12 @@ const newCompany = (id: string, name: string, description: string | null = null)
 
 function createService() {
   const repository = new FakeCompanyRepository();
-  const seeder = new FakeCompanyServicesSeeder(repository);
-  return { repository, seeder, service: new CompanyCreateService(repository, seeder) };
+  return { repository, service: new CompanyCreateService(repository) };
 }
 
 describe('CompanyCreateService', () => {
-  it('creates an active company, its Administrador role, the default membership and the services, in order', async () => {
-    const { repository, seeder, service } = createService();
+  it('creates an active company, its Administrador role and the default membership, in order', async () => {
+    const { repository, service } = createService();
 
     const company = await service.execute(newCompany(ID_1, 'Acme', 'Desc'));
 
@@ -38,11 +37,10 @@ describe('CompanyCreateService', () => {
       status: 'active',
       createdBy: OWNER,
     });
-    expect(repository.steps).toEqual(['company', 'role', 'membership', 'services']);
+    expect(repository.steps).toEqual(['company', 'role', 'membership']);
     expect(repository.memberships).toEqual([
       { userId: OWNER, companyId: ID_1, roleId: 'role-1', isDefault: true },
     ]);
-    expect(seeder.seeded).toEqual([ID_1]);
   });
 
   it('leaves the creator with a single default membership', async () => {

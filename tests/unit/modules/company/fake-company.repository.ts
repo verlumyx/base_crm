@@ -1,8 +1,5 @@
 import type { CompanyRow } from '@/modules/company/models/company.model';
-import type {
-  CompanyRepository,
-  CompanyServicesSeeder,
-} from '@/modules/company/repositories/company.repository';
+import type { CompanyRepository } from '@/modules/company/repositories/company.repository';
 import type { CreateCompanyCommand } from '@/modules/company/commands/create-company.command';
 import type { SearchCompanyCommand } from '@/modules/company/commands/search-company.command';
 import type { UpdateCompanyCommand } from '@/modules/company/commands/update-company.command';
@@ -68,16 +65,5 @@ export class FakeCompanyRepository implements CompanyRepository {
     this.steps.push('membership');
     for (const m of this.memberships) if (m.userId === userId) m.isDefault = false;
     this.memberships.push({ userId, companyId, roleId, isDefault: true });
-  }
-}
-
-export class FakeCompanyServicesSeeder implements CompanyServicesSeeder {
-  seeded: string[] = [];
-
-  constructor(private readonly repository?: FakeCompanyRepository) {}
-
-  async execute(companyId: string) {
-    this.repository?.steps.push('services');
-    this.seeded.push(companyId);
   }
 }

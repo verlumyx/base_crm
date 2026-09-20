@@ -32,7 +32,7 @@ import { usePermission } from '@/modules/shared/auth/company-context';
 import { CLIENT_PERMISSIONS } from '@/modules/client/permissions';
 import { clientRoutes } from '@/modules/client/routes';
 import { updateClientStatusAction } from '@/app/[companyId]/clients/actions';
-import type { ClientDto, ClientPlatformDto } from '@/modules/client/serializers/client.serializer';
+import type { ClientDto } from '@/modules/client/serializers/client.serializer';
 import type { ClientFilters, ClientMeta } from '../types/Client';
 
 const COLUMNS = 'lg:grid-cols-[0.9fr_2.2fr_1.2fr_0.9fr_1.2fr]';

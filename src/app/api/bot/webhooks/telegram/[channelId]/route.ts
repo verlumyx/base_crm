@@ -26,12 +26,16 @@ export async function POST(request: Request, { params }: Params): Promise<Respon
   const rawBody = await request.text();
 
   const container = createBotContainer(db);
-  const channel = await container.channelRepository.findActiveWithCredentials(channelId);
+  const channel = await container.channelRepository.findWithCredentials(channelId);
   if (!channel || channel.row.provider !== 'telegram') return new Response('Not found', { status: 404 });
 
   const gateway = new TelegramChannelGateway(channel.row.externalId);
   if (!gateway.verify({ rawBody, headers: request.headers }, channel.credentials)) {
     return Response.json({ status: 'invalid_secret' }, { status: 401 });
+  }
+
+  if (channel.row.status !== 'active') {
+    return Response.json({ status: 'ignored', reason: 'channel_inactive' }, { status: 200 });
   }
 
   let payload: unknown;

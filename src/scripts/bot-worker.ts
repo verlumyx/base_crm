@@ -24,7 +24,14 @@ let stopping = false;
 
 async function main() {
   // Fail fast and clearly: without a key every cycle would throw and log noise every two seconds.
-  if (!process.env.GOOGLE_API_KEY) {
+  if (process.env.BOT_AI_PROVIDER === 'azure') {
+    if (!process.env.AZURE_OPENAI_API_KEY || !process.env.AZURE_OPENAI_ENDPOINT) {
+      console.error(
+        '[bot-worker] Falta AZURE_OPENAI_API_KEY o AZURE_OPENAI_ENDPOINT. Configúralas en .env.',
+      );
+      process.exit(1);
+    }
+  } else if (!process.env.GOOGLE_API_KEY) {
     console.error('[bot-worker] Falta GOOGLE_API_KEY. Configúrala en .env (https://aistudio.google.com/apikey).');
     process.exit(1);
   }

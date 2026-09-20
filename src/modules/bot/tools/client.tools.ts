@@ -61,7 +61,7 @@ export const consultarMiCuentaTool: BotTool<typeof accountSchema> = {
   mutating: false,
 
   async execute(_args, context) {
-    if (!context.clientId) return { registrado: false, suscripciones: [] };
+    if (!context.clientId) return { registrado: false };
 
     const overview = await createClientContainer(context.db).overviewService.execute(
       context.clientId,
@@ -72,11 +72,7 @@ export const consultarMiCuentaTool: BotTool<typeof accountSchema> = {
       registrado: true,
       codigo: overview.client.code,
       nombre: overview.client.name,
-      suscripciones: overview.sales.map((sale) => ({
-        servicio: sale.serviceName,
-        estado: sale.status,
-        vence: sale.endDate,
-      })),
+      estado: overview.client.status,
     };
   },
 };

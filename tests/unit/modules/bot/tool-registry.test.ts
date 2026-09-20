@@ -19,10 +19,7 @@ describe('tool registry', () => {
     expect(names).toEqual(
       expect.arrayContaining([
         'buscar_informacion',
-        'listar_catalogo',
-        'consultar_disponibilidad',
         'consultar_mi_cuenta',
-        'consultar_mis_ventas',
       ]),
     );
   });
@@ -30,10 +27,9 @@ describe('tool registry', () => {
   it('hides each writing tool when the company turned it off', () => {
     const names = (s: BotSettingsRow) => buildToolRegistry(s).map((tool) => tool.name);
 
-    expect(names(settings({ autoCreateSale: false }))).not.toContain('crear_venta');
     expect(names(settings({ autoCreateClient: false }))).not.toContain('registrar_cliente');
     expect(names(settings({ handoffEnabled: false }))).not.toContain('escalar_a_humano');
-    expect(names(settings())).toEqual(expect.arrayContaining(['crear_venta', 'registrar_cliente', 'escalar_a_humano']));
+    expect(names(settings())).toEqual(expect.arrayContaining(['registrar_cliente', 'escalar_a_humano']));
   });
 
   it('never exposes streaming accounts, credentials or raw SQL', () => {
@@ -76,6 +72,6 @@ describe('tool registry', () => {
       .map((tool) => tool.name)
       .sort();
 
-    expect(mutating).toEqual(['crear_venta', 'escalar_a_humano', 'registrar_cliente']);
+    expect(mutating).toEqual(['escalar_a_humano', 'registrar_cliente']);
   });
 });

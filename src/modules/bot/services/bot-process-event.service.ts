@@ -19,8 +19,8 @@ import type { ToolContext } from '../tools/bot-tool';
 import { BotToolRunner } from './bot-tool-runner.service';
 import { BotAgentRunner, type AgentOutcome } from './bot-agent-runner.service';
 
-/** What happened to one event; the worker only aggregates these. */
-export type ProcessOutcome = 'answered' | 'discarded' | 'silenced';
+export type DiscardedOutcome = { outcome: 'discarded'; reason: string };
+export type ProcessOutcome = 'answered' | 'discarded' | 'silenced' | DiscardedOutcome;
 
 export type ProcessDeps = {
   db: DbExecutor;
@@ -48,9 +48,12 @@ export class BotProcessEventService {
     // At-least-once delivery: if we already sent a reply for this event, do not send a second one.
     if (await conversations.repository.hasAnsweredEvent(event.id)) return 'answered';
 
-    const settings = await this.deps.settingsRepository.findByCompany(event.companyId);
     const channel = await this.deps.channelRepository.findWithCredentials(event.channelId);
-    if (!settings || !channel) return 'discarded';
+    if (!channel) return { outcome: 'discarded', reason: 'Canal no encontrado.' };
+    if (channel.row.status !== 'active') return { outcome: 'discarded', reason: 'Canal inactivo.' };
+
+    const settings = await this.deps.settingsRepository.findByCompany(event.companyId);
+    if (!settings) return { outcome: 'discarded', reason: 'Configuración del bot no inicializada.' };
 
     const { contact, conversation } = await conversations.resolveService.execute({
       companyId: event.companyId,
