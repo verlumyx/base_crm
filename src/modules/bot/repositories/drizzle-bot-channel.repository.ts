@@ -68,6 +68,7 @@ export class DrizzleBotChannelRepository implements BotChannelRepository {
         ...(command.accessToken ? { accessTokenEncrypted: encrypt(command.accessToken) } : {}),
         ...(command.appSecret ? { appSecretEncrypted: encrypt(command.appSecret) } : {}),
         ...(command.verifyToken ? { verifyTokenEncrypted: encrypt(command.verifyToken) } : {}),
+        ...(command.webhookSecret ? { webhookSecretEncrypted: encrypt(command.webhookSecret) } : {}),
       })
       .where(eq(botChannels.id, row.id));
   }

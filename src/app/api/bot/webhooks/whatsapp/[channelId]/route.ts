@@ -1,7 +1,7 @@
 import { db } from '@/db/client';
 import { isUuid } from '@/modules/shared/uuid';
 import { createBotContainer } from '@/modules/bot/container';
-import { MetaCloudChannelGateway, constantTimeEquals } from '@/modules/bot/channels/whatsapp/meta-cloud.gateway';
+import { YCloudChannelGateway } from '@/modules/bot/channels/whatsapp/ycloud.gateway';
 import { webhookRateLimiter } from '@/modules/bot/infrastructure/bot-rate-limits';
 import { scheduleDrain } from '@/modules/bot/infrastructure/schedule-drain';
 
@@ -10,12 +10,11 @@ export const runtime = 'nodejs';
 
 type Params = { params: Promise<{ channelId: string }> };
 
-const gateway = new MetaCloudChannelGateway();
+const gateway = new YCloudChannelGateway();
 
 /**
- * WhatsApp Cloud API webhook. The channel id is in the URL because Meta's GET handshake carries no
- * `phone_number_id`: without it there is no way to know whose verify token to compare against.
- * The id is not a secret — the HMAC signature on every POST is the real barrier.
+ * WhatsApp (YCloud) webhook. The channel id is in the URL to route the inbound event to
+ * the correct company and verify against its webhook signing secret.
  *
  * This is a Route Handler rather than a Server Action on purpose: it is an inbound HTTP call from
  * a third party, which a Server Action cannot receive.
@@ -24,19 +23,10 @@ export async function GET(request: Request, { params }: Params): Promise<Respons
   const { channelId } = await params;
   if (!isUuid(channelId)) return new Response('Not found', { status: 404 });
 
-  const channel = await createBotContainer(db).channelRepository.findWithCredentials(channelId);
-  if (!channel?.credentials.verifyToken) return new Response('Forbidden', { status: 403 });
+  const channel = await createBotContainer(db).channelRepository.findActiveWithCredentials(channelId);
+  if (!channel) return new Response('Not found', { status: 404 });
 
-  const url = new URL(request.url);
-  const mode = url.searchParams.get('hub.mode');
-  const token = url.searchParams.get('hub.verify_token') ?? '';
-  const challenge = url.searchParams.get('hub.challenge') ?? '';
-
-  if (mode !== 'subscribe' || !constantTimeEquals(token, channel.credentials.verifyToken)) {
-    return new Response('Forbidden', { status: 403 });
-  }
-
-  return new Response(challenge, { status: 200, headers: { 'Content-Type': 'text/plain' } });
+  return new Response('OK', { status: 200, headers: { 'Content-Type': 'text/plain' } });
 }
 
 export async function POST(request: Request, { params }: Params): Promise<Response> {
@@ -56,6 +46,11 @@ export async function POST(request: Request, { params }: Params): Promise<Respon
   if (!channel) return new Response('Not found', { status: 404 });
 
   if (!gateway.verify({ rawBody, headers: request.headers }, channel.credentials)) {
+    console.warn('[whatsapp-webhook] Firma inválida para el canal', channelId, {
+      hasWebhookSecret: Boolean(channel.credentials.webhookSecret),
+      signatureHeader:
+        request.headers.get('ycloud-signature') ?? request.headers.get('x-ycloud-signature') ?? null,
+    });
     return Response.json({ status: 'invalid_signature' }, { status: 401 });
   }
 

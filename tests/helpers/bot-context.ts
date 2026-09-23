@@ -7,10 +7,12 @@ import { botSettings, type BotSettingsRow } from '@/modules/bot/models/bot-setti
 import { DrizzleBotSettingsRepository } from '@/modules/bot/repositories/drizzle-bot-settings.repository';
 import { eq } from 'drizzle-orm';
 
+export const YCLOUD_WEBHOOK_SECRET = 'whsec_test_secret_for_tests';
 export const META_APP_SECRET = 'meta-app-secret-for-tests';
 export const META_VERIFY_TOKEN = 'verify-token-for-tests';
 export const TELEGRAM_SECRET = 'telegram-secret-for-tests';
-export const WHATSAPP_PHONE_NUMBER_ID = '106540352242922';
+export const WHATSAPP_PHONE_NUMBER = '+15550783881';
+export const WHATSAPP_PHONE_NUMBER_ID = '+15550783881';
 export const TELEGRAM_BOT_ID = '7654321';
 
 /** Creates the bot user, role, membership and settings row exactly as the setup action does. */
@@ -42,12 +44,12 @@ export async function seedChannel(
     id,
     companyId,
     provider,
-    externalId: provider === 'whatsapp' ? WHATSAPP_PHONE_NUMBER_ID : TELEGRAM_BOT_ID,
+    externalId: provider === 'whatsapp' ? WHATSAPP_PHONE_NUMBER : TELEGRAM_BOT_ID,
     displayName: provider === 'whatsapp' ? 'Ventas WhatsApp' : '@ventas_bot',
     accessTokenEncrypted: encrypt('access-token'),
-    appSecretEncrypted: provider === 'whatsapp' ? encrypt(META_APP_SECRET) : null,
-    verifyTokenEncrypted: provider === 'whatsapp' ? encrypt(META_VERIFY_TOKEN) : null,
-    webhookSecretEncrypted: provider === 'telegram' ? encrypt(TELEGRAM_SECRET) : null,
+    appSecretEncrypted: null,
+    verifyTokenEncrypted: null,
+    webhookSecretEncrypted: encrypt(provider === 'whatsapp' ? YCLOUD_WEBHOOK_SECRET : TELEGRAM_SECRET),
     status: 'active',
     ...overrides,
   });
@@ -56,15 +58,17 @@ export async function seedChannel(
   return row;
 }
 
-/** A signed Meta webhook request, exactly as Graph sends it. */
-export function whatsappRequest(channelId: string, body: unknown, secret = META_APP_SECRET): Request {
+/** A signed YCloud WhatsApp webhook request. */
+export function whatsappRequest(channelId: string, body: unknown, secret = YCLOUD_WEBHOOK_SECRET): Request {
   const rawBody = JSON.stringify(body);
+  const timestamp = String(Math.floor(Date.now() / 1000));
+  const signature = createHmac('sha256', secret).update(`${timestamp}.${rawBody}`, 'utf8').digest('hex');
 
   return new Request(`http://localhost/api/bot/webhooks/whatsapp/${channelId}`, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
-      'x-hub-signature-256': `sha256=${createHmac('sha256', secret).update(rawBody, 'utf8').digest('hex')}`,
+      'x-ycloud-signature': `t=${timestamp},s=${signature}`,
     },
     body: rawBody,
   });
@@ -78,34 +82,25 @@ export function telegramRequest(channelId: string, body: unknown, secret = TELEG
   });
 }
 
-/** An inbound WhatsApp text payload with a unique `wamid`. */
+/** An inbound WhatsApp text payload with a unique `wamid` (YCloud format). */
 export function whatsappTextPayload(text: string, options: { from?: string; wamid?: string; name?: string } = {}) {
+  const from = options.from ?? '+584121234567';
+  const wamid = options.wamid ?? `wamid.${uuidv7()}`;
   return {
-    object: 'whatsapp_business_account',
-    entry: [
-      {
-        id: 'waba-id',
-        changes: [
-          {
-            field: 'messages',
-            value: {
-              messaging_product: 'whatsapp',
-              metadata: { display_phone_number: '15550783881', phone_number_id: WHATSAPP_PHONE_NUMBER_ID },
-              contacts: [{ profile: { name: options.name ?? 'Camila Rojas' }, wa_id: options.from ?? '584121234567' }],
-              messages: [
-                {
-                  from: options.from ?? '584121234567',
-                  id: options.wamid ?? `wamid.${uuidv7()}`,
-                  timestamp: String(Math.floor(Date.now() / 1000)),
-                  text: { body: text },
-                  type: 'text',
-                },
-              ],
-            },
-          },
-        ],
-      },
-    ],
+    id: `evt_${uuidv7()}`,
+    type: 'whatsapp.inbound_message.received',
+    apiVersion: 'v2',
+    createTime: new Date().toISOString(),
+    whatsappInboundMessage: {
+      id: uuidv7(),
+      wamid,
+      from,
+      to: WHATSAPP_PHONE_NUMBER,
+      type: 'text',
+      text: { body: text },
+      customerProfile: { name: options.name ?? 'Camila Rojas' },
+      sendTime: new Date().toISOString(),
+    },
   };
 }
 

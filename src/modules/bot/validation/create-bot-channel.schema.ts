@@ -16,15 +16,11 @@ export const createBotChannelSchema = updateBotChannelSchema
   })
   .refine((data) => data.provider !== 'whatsapp' || Boolean(data.externalId), {
     path: ['externalId'],
-    message: 'El Phone Number ID es obligatorio para WhatsApp.',
+    message: 'El número de WhatsApp es obligatorio (ej. +584121234567).',
   })
-  .refine((data) => data.provider !== 'whatsapp' || Boolean(data.appSecret), {
-    path: ['appSecret'],
-    message: 'El App Secret es obligatorio: sin él no se puede verificar la firma de Meta.',
-  })
-  .refine((data) => data.provider !== 'whatsapp' || Boolean(data.verifyToken), {
-    path: ['verifyToken'],
-    message: 'El Verify Token es obligatorio para el handshake de Meta.',
+  .refine((data) => data.provider !== 'whatsapp' || Boolean(data.webhookSecret), {
+    path: ['webhookSecret'],
+    message: 'El Webhook Signing Secret de YCloud es obligatorio.',
   });
 
 export type CreateBotChannelInput = z.infer<typeof createBotChannelSchema>;

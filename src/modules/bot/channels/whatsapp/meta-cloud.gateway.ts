@@ -115,27 +115,8 @@ export class MetaCloudChannelGateway implements ChannelGateway {
   }
 }
 
-/** A provider refused the message. `retryable` decides whether the event goes back to the queue. */
-export class ChannelSendError extends Error {
-  constructor(
-    message: string,
-    readonly httpStatus: number,
-    readonly providerCode: number | null,
-  ) {
-    super(message);
-    this.name = 'ChannelSendError';
-  }
-
-  /** 4xx means the request itself is wrong: retrying would just spam the customer. */
-  get retryable(): boolean {
-    return this.httpStatus >= 500 || this.httpStatus === 429;
-  }
-
-  /** 131047: no user-initiated message in the last 24 hours, so free-form text is not allowed. */
-  get outsideServiceWindow(): boolean {
-    return this.providerCode === 131047;
-  }
-}
+export { ChannelSendError, constantTimeEquals } from './ycloud.gateway';
+import { ChannelSendError, constantTimeEquals } from './ycloud.gateway';
 
 /** Production sends `entry[].changes[].value`; Meta's test console posts a bare `value`. */
 function extractValues(payload: unknown): MetaValue[] {
@@ -153,11 +134,4 @@ function isValue(value: MetaValue | undefined): value is MetaValue {
 function timestampToIso(timestamp: string | undefined): string {
   const seconds = Number(timestamp);
   return Number.isFinite(seconds) && seconds > 0 ? new Date(seconds * 1000).toISOString() : new Date().toISOString();
-}
-
-export function constantTimeEquals(a: string, b: string): boolean {
-  const left = Buffer.from(a, 'utf8');
-  const right = Buffer.from(b, 'utf8');
-  // `timingSafeEqual` throws on different lengths, which would itself leak; compare lengths first.
-  return left.length === right.length && timingSafeEqual(left, right);
 }

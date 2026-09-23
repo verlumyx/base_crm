@@ -4,7 +4,7 @@ import { createConversationContainer } from '@/modules/conversation/container';
 import type { ChatModel, EmbeddingModel } from './infrastructure/ai-ports';
 import { chatModel, embeddingModel } from './infrastructure/ai-factory';
 import { LiveChannelIdentityResolver } from './infrastructure/channel-identity.resolver';
-import { MetaCloudChannelGateway } from './channels/whatsapp/meta-cloud.gateway';
+import { YCloudChannelGateway } from './channels/whatsapp/ycloud.gateway';
 import { TelegramChannelGateway } from './channels/telegram/telegram.gateway';
 import type { ChannelGateway } from './channels/channel-gateway';
 import { DrizzleBotSettingsRepository } from './repositories/drizzle-bot-settings.repository';
@@ -34,7 +34,7 @@ export type BotContainerOptions = {
 
 /** The gateway that speaks a given channel's protocol. */
 export function gatewayFor(channel: { provider: string; externalId: string }): ChannelGateway {
-  return channel.provider === 'telegram' ? new TelegramChannelGateway(channel.externalId) : new MetaCloudChannelGateway();
+  return channel.provider === 'telegram' ? new TelegramChannelGateway(channel.externalId) : new YCloudChannelGateway();
 }
 
 /** Per-request DI: pass `db` from pages and `tx` from actions. */

@@ -1,11 +1,12 @@
 import 'server-only';
 import { randomBytes } from 'node:crypto';
+import { toE164 } from '@/lib/phone';
 import { getTelegramBot } from '../channels/telegram/telegram.gateway';
 import type { ChannelIdentityResolver } from '../services/bot-channel-create.service';
 import type { CreateBotChannelInput } from '../validation/create-bot-channel.schema';
 
 /**
- * WhatsApp: the admin copies the `phone_number_id` from the Meta console, so we trust the input.
+ * WhatsApp: the admin configures their WhatsApp number (E.164) and YCloud webhook signing secret.
  * Telegram: the token itself identifies the bot, so we ask `getMe` and mint the webhook secret
  * that will authenticate every future update (Telegram does not sign its payloads).
  */
@@ -20,10 +21,12 @@ export class LiveChannelIdentityResolver implements ChannelIdentityResolver {
       };
     }
 
+    const normalizedExternalId = input.externalId ? (toE164(input.externalId) ?? input.externalId) : '';
+
     return {
-      externalId: input.externalId!,
+      externalId: normalizedExternalId,
       displayName: input.displayName,
-      webhookSecret: null,
+      webhookSecret: input.webhookSecret ?? null,
     };
   }
 }

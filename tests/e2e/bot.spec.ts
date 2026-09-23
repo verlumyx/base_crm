@@ -85,19 +85,18 @@ test('create, find, view, re-index and deactivate a knowledge document', async (
 test('connect a WhatsApp channel and see its webhook URL', async ({ page }) => {
   const companyId = await openDefaultCompany(page);
   const name = unique('Ventas E2E');
-  const phoneNumberId = String(Date.now());
+  const phoneNumber = '+1555' + String(Date.now()).slice(-7);
 
   await page.goto(`/${companyId}/bot/channels/create`);
   await page.locator('#displayName').fill(name);
-  await page.locator('#externalId').fill(phoneNumberId);
-  await page.locator('#accessToken').fill('token-de-prueba');
-  await page.locator('#appSecret').fill('app-secret-de-prueba');
-  await page.locator('#verifyToken').fill('verify-token-de-prueba');
+  await page.locator('#externalId').fill(phoneNumber);
+  await page.locator('#accessToken').fill('api-key-de-prueba');
+  await page.locator('#webhookSecret').fill('whsec_test_secret_de_prueba');
   await page.getByRole('button', { name: 'Conectar canal' }).click();
 
   await expect(page.getByText('Canal conectado. Actívalo cuando hayas configurado el webhook.')).toBeVisible();
   await expect(page).toHaveURL(new RegExp(`/${companyId}/bot/channels/[0-9a-f-]{36}/edit$`));
-  // The webhook URL carries the channel id, which is what routes Meta's payload to this company.
+  // The webhook URL carries the channel id, which is what routes the payload to this company.
   await expect(page.getByText(/\/api\/bot\/webhooks\/whatsapp\/[0-9a-f-]{36}/)).toBeVisible();
   // Secrets are stored, never rendered back.
   await expect(page.locator('#accessToken')).toHaveValue('');
@@ -105,7 +104,7 @@ test('connect a WhatsApp channel and see its webhook URL', async ({ page }) => {
 
   await page.goto(`/${companyId}/bot/channels`);
   await expect(page.getByText(name)).toBeVisible();
-  await expect(page.getByText(phoneNumberId)).toBeVisible();
+  await expect(page.getByText(phoneNumber)).toBeVisible();
 });
 
 test('the conversations and queue consoles load', async ({ page }) => {

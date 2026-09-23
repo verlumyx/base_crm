@@ -15,6 +15,7 @@ export type BotChannelFormData = {
   accessToken: string;
   appSecret: string;
   verifyToken: string;
+  webhookSecret: string;
   wabaId: string;
   graphApiVersion: string;
   active: boolean;
@@ -36,8 +37,9 @@ export function useBotChannelForm(options: Options) {
     accessToken: '',
     appSecret: '',
     verifyToken: '',
+    webhookSecret: '',
     wabaId: channel?.wabaId ?? '',
-    graphApiVersion: channel?.graphApiVersion ?? 'v21.0',
+    graphApiVersion: channel?.graphApiVersion ?? 'v2',
     active: channel?.status === 'active',
   }));
 

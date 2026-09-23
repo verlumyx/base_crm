@@ -11,6 +11,7 @@ export const updateBotChannelSchema = z.object({
   accessToken: optionalText('El token de acceso', 500),
   appSecret: optionalText('El app secret', 500),
   verifyToken: optionalText('El verify token', 200),
+  webhookSecret: optionalText('El webhook secret', 500),
   wabaId: optionalText('El WABA id', 64),
   graphApiVersion: requiredText('La versión de la API', 10).default(DEFAULT_GRAPH_API_VERSION),
   status: z.enum(BOT_CHANNEL_STATUSES, { message: 'El estado no es válido.' }),

@@ -86,7 +86,7 @@ export function BotChannelForm({ companyId, webhookUrl }: { companyId: string; w
               <SearchableSelect
                 id="provider"
                 options={[
-                  { value: 'whatsapp', label: 'WhatsApp (API oficial de Meta)' },
+                  { value: 'whatsapp', label: 'WhatsApp (YCloud)' },
                   { value: 'telegram', label: 'Telegram' },
                 ]}
                 value={data.provider}
@@ -122,20 +122,20 @@ export function BotChannelForm({ companyId, webhookUrl }: { companyId: string; w
           {isWhatsApp && mode === 'create' && (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="externalId" className="text-[13px] font-semibold">
-                Phone Number ID *
+                Número de WhatsApp (E.164) *
               </Label>
               <Input
                 id="externalId"
                 name="externalId"
                 value={data.externalId}
                 onChange={(e) => setData('externalId', e.target.value)}
-                placeholder="106540352242922"
+                placeholder="+584121234567"
                 maxLength={64}
                 className={cn('h-[42px] rounded-[10px] font-mono', errors.externalId && 'border-bad')}
                 required
               />
               <p className="text-muted-foreground text-[13px]">
-                En Meta for Developers → WhatsApp → Configuración de la API.
+                Tu número de teléfono conectado en la plataforma de YCloud.
               </p>
               <FieldError messages={errors.externalId} />
             </div>
@@ -165,10 +165,10 @@ export function BotChannelForm({ companyId, webhookUrl }: { companyId: string; w
         <div className="flex flex-col gap-4 p-5">
           <SecretField
             id="accessToken"
-            label={isWhatsApp ? 'Access Token' : 'Token del bot'}
+            label={isWhatsApp ? 'API Key de YCloud' : 'Token del bot'}
             hint={
               isWhatsApp
-                ? 'Token permanente del usuario de sistema de la app de Meta.'
+                ? 'En YCloud Console → Settings → API Keys.'
                 : 'El token que te dio @BotFather.'
             }
             stored={Boolean(channel?.hasAccessToken)}
@@ -181,54 +181,16 @@ export function BotChannelForm({ companyId, webhookUrl }: { companyId: string; w
           {isWhatsApp && (
             <>
               <SecretField
-                id="appSecret"
-                label="App Secret"
-                hint="Verifica la firma X-Hub-Signature-256 de cada mensaje. Sin él no se acepta ninguno."
-                stored={Boolean(channel?.hasAppSecret)}
-                value={data.appSecret}
-                onChange={(value) => setData('appSecret', value)}
-                error={errors.appSecret}
+                id="webhookSecret"
+                label="Webhook Signing Secret"
+                hint="En YCloud Console → Developers → Webhooks (formato whsec_...). Verifica la autenticidad de los mensajes."
+                stored={Boolean(channel?.hasWebhookSecret)}
+                value={data.webhookSecret}
+                onChange={(value) => setData('webhookSecret', value)}
+                error={errors.webhookSecret}
                 required={mode === 'create'}
               />
-              <SecretField
-                id="verifyToken"
-                label="Verify Token"
-                hint="El que escribirás en Meta al registrar el webhook. Puede ser cualquier cadena larga."
-                stored={Boolean(channel?.hasVerifyToken)}
-                value={data.verifyToken}
-                onChange={(value) => setData('verifyToken', value)}
-                error={errors.verifyToken}
-                required={mode === 'create'}
-              />
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="wabaId" className="text-[13px] font-semibold">
-                    WABA ID
-                  </Label>
-                  <Input
-                    id="wabaId"
-                    name="wabaId"
-                    value={data.wabaId}
-                    onChange={(e) => setData('wabaId', e.target.value)}
-                    maxLength={64}
-                    className="h-[42px] rounded-[10px] font-mono"
-                  />
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label htmlFor="graphApiVersion" className="text-[13px] font-semibold">
-                    Versión de la Graph API *
-                  </Label>
-                  <Input
-                    id="graphApiVersion"
-                    name="graphApiVersion"
-                    value={data.graphApiVersion}
-                    onChange={(e) => setData('graphApiVersion', e.target.value)}
-                    maxLength={10}
-                    className="h-[42px] rounded-[10px] font-mono"
-                    required
-                  />
-                </div>
-              </div>
+              <input type="hidden" name="graphApiVersion" value="v2" />
             </>
           )}
         </div>
@@ -241,10 +203,8 @@ export function BotChannelForm({ companyId, webhookUrl }: { companyId: string; w
             <code className="bg-muted overflow-x-auto rounded-[10px] p-3 text-[13px]">{webhookUrl}</code>
             {isWhatsApp ? (
               <p className="text-muted-foreground text-[13px]">
-                Pégala en Meta for Developers → Webhooks, con tu Verify Token, y suscribe el campo{' '}
-                <strong>messages</strong>. Recuerda además llamar a{' '}
-                <code className="text-[12px]">POST /{'{WABA_ID}'}/subscribed_apps</code>: sin ese paso Meta acepta la
-                suscripción pero no entrega nada.
+                Pégala en <strong>YCloud Console → Developers → Webhooks</strong>, copia el <strong>Signing Secret</strong> en el campo de arriba y suscribe los eventos{' '}
+                <strong>whatsapp.inbound_message.received</strong> y <strong>whatsapp.message.updated</strong>.
               </p>
             ) : (
               <p className="text-muted-foreground text-[13px]">
