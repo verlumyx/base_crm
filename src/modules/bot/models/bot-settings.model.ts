@@ -49,7 +49,7 @@ export const botSettings = pgTable(
     temperature: numeric('temperature', { precision: 3, scale: 2 }).notNull().default('0.20'),
     maxToolIterations: smallint('max_tool_iterations').notNull().default(6),
     retrievalTopK: smallint('retrieval_top_k').notNull().default(5),
-    retrievalMinScore: numeric('retrieval_min_score', { precision: 4, scale: 3 }).notNull().default('0.650'),
+    retrievalMinScore: numeric('retrieval_min_score', { precision: 4, scale: 3 }).notNull().default('0.20'),
     /** How many past messages of the thread are replayed to the model. */
     historyWindow: smallint('history_window').notNull().default(20),
     handoffEnabled: boolean('handoff_enabled').notNull().default(true),

@@ -4221,7 +4221,7 @@
           "type": "numeric(4, 3)",
           "primaryKey": false,
           "notNull": true,
-          "default": "'0.650'"
+          "default": "'0.20'"
         },
         "history_window": {
           "name": "history_window",

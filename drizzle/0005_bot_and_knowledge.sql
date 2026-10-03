@@ -15,7 +15,7 @@ CREATE TABLE "app_bot_settings" (
 	"temperature" numeric(3, 2) DEFAULT '0.20' NOT NULL,
 	"max_tool_iterations" smallint DEFAULT 6 NOT NULL,
 	"retrieval_top_k" smallint DEFAULT 5 NOT NULL,
-	"retrieval_min_score" numeric(4, 3) DEFAULT '0.650' NOT NULL,
+	"retrieval_min_score" numeric(4, 3) DEFAULT '0.20' NOT NULL,
 	"history_window" smallint DEFAULT 20 NOT NULL,
 	"handoff_enabled" boolean DEFAULT true NOT NULL,
 	"handoff_minutes" integer DEFAULT 60 NOT NULL,
