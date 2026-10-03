@@ -2,7 +2,7 @@ services:
   postgres:
     build:
       context: ./docker/postgres
-    image: valolabs-crm-postgres:16-pgvector
+    image: valolabs-crm-postgres:16-pgvector-dev
     container_name: base_crm_postgres
     restart: unless-stopped
     ports:
@@ -25,13 +25,18 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: base_crm_web
     restart: unless-stopped
     ports:
       - "${APP_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=5432
       - POSTGRES_USER=${POSTGRES_USER:-streaming_crm}
