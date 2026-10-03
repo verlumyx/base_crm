@@ -12,8 +12,8 @@ const schema = z.object({
 export const buscarInformacionTool: BotTool<typeof schema> = {
   name: 'buscar_informacion',
   description:
-    'Consulta la base de conocimiento de la empresa: políticas, formas de pago, preguntas frecuentes, ' +
-    'cómo funciona el servicio. Úsala siempre antes de responder algo que no venga de otra herramienta.',
+    'Consulta la base de conocimiento de la empresa. Úsala siempre que necesites responder ' +
+    'preguntas sobre la empresa, o si las instrucciones te indican buscar un tema específico.',
   schema,
   mutating: false,
 

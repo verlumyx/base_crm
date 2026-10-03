@@ -7,6 +7,7 @@ export class CreateKnowledgeDocumentCommand {
     readonly createdBy: string | null,
     readonly title: string,
     readonly content: string,
+    readonly triggerKeywords: string | null,
   ) {}
 
   static fromInput(
@@ -14,6 +15,6 @@ export class CreateKnowledgeDocumentCommand {
     companyId: string,
     createdBy: string | null,
   ): CreateKnowledgeDocumentCommand {
-    return new CreateKnowledgeDocumentCommand(input.id, companyId, createdBy, input.title, input.content);
+    return new CreateKnowledgeDocumentCommand(input.id, companyId, createdBy, input.title, input.content, input.triggerKeywords ?? null);
   }
 }

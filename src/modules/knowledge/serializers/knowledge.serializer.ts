@@ -9,6 +9,7 @@ export type KnowledgeDocumentDto = {
   code: string;
   title: string;
   content: string;
+  triggerKeywords: string | null;
   status: KnowledgeDocumentStatus;
   ingestStatus: KnowledgeIngestStatus;
   ingestError: string | null;
@@ -25,6 +26,7 @@ export function toKnowledgeDocumentDto(row: KnowledgeDocumentRow): KnowledgeDocu
     code: row.code,
     title: row.title,
     content: row.content,
+    triggerKeywords: row.triggerKeywords,
     status: row.status,
     ingestStatus: row.ingestStatus,
     ingestError: row.ingestError,

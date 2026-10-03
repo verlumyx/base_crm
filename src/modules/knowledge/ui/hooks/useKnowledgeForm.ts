@@ -9,7 +9,7 @@ import {
 } from '@/app/[companyId]/bot/knowledge/actions';
 import type { KnowledgeDocumentDto } from '@/modules/knowledge/serializers/knowledge.serializer';
 
-export type KnowledgeFormData = { id: string; title: string; content: string };
+export type KnowledgeFormData = { id: string; title: string; content: string; triggerKeywords: string };
 
 type Options =
   | { mode: 'create'; companyId: string; initialId: string; document?: undefined }
@@ -22,6 +22,7 @@ export function useKnowledgeForm(options: Options) {
     id: document?.id ?? options.initialId ?? '',
     title: document?.title ?? '',
     content: document?.content ?? '',
+    triggerKeywords: document?.triggerKeywords ?? '',
   }));
 
   // companyId / id are bound here — the action never reads them from FormData.

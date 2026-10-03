@@ -1,0 +1,1 @@
+ALTER TABLE "app_knowledge_documents" ADD COLUMN "trigger_keywords" varchar(300);

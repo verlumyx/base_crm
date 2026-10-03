@@ -36,6 +36,7 @@ export class DrizzleKnowledgeRepository implements KnowledgeRepository {
       code,
       title: command.title,
       content: command.content,
+      triggerKeywords: command.triggerKeywords,
       contentHash,
       createdBy: command.createdBy,
     });
@@ -86,6 +87,7 @@ export class DrizzleKnowledgeRepository implements KnowledgeRepository {
       .set({
         title: command.title,
         content: command.content,
+        triggerKeywords: command.triggerKeywords,
         contentHash,
         // Renaming a document does not cost an embedding call; rewriting it does.
         ...(contentChanged ? { ingestStatus: 'pending' as const, ingestError: null } : {}),

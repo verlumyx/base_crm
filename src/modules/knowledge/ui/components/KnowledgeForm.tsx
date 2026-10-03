@@ -45,6 +45,25 @@ export function KnowledgeForm() {
           </div>
 
           <div className="flex flex-col gap-1.5">
+            <Label htmlFor="triggerKeywords" className="text-[13px] font-semibold">
+              Palabras claves (Opcional)
+            </Label>
+            <Input
+              id="triggerKeywords"
+              name="triggerKeywords"
+              value={data.triggerKeywords}
+              onChange={(e) => setData('triggerKeywords', e.target.value)}
+              placeholder="Ej. ubicación, identidad, quienes somos, productos"
+              maxLength={300}
+              className={cn('h-[42px] rounded-[10px]', errors.triggerKeywords && 'border-bad')}
+            />
+            <p className="text-muted-foreground text-[13px]">
+              Palabras que le indicarán a la IA cuándo debe buscar en este documento.
+            </p>
+            <FieldError messages={errors.triggerKeywords} />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
             <Label htmlFor="content" className="text-[13px] font-semibold">
               Contenido *
             </Label>

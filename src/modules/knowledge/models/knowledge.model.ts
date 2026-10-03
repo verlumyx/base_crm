@@ -43,6 +43,7 @@ export const knowledgeDocuments = pgTable(
     content: text('content').notNull(),
     /** sha256 of `content`: re-ingesting an unchanged document is a no-op. */
     contentHash: varchar('content_hash', { length: 64 }).notNull(),
+    triggerKeywords: varchar('trigger_keywords', { length: 300 }),
     /** `inactive` removes it from retrieval without deleting anything (`no-delete-policy`). */
     status: varchar('status', { length: 20 }).notNull().default('active').$type<KnowledgeDocumentStatus>(),
     ingestStatus: varchar('ingest_status', { length: 20 }).notNull().default('pending').$type<KnowledgeIngestStatus>(),

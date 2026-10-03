@@ -5,6 +5,7 @@ import { requiredText } from '@/modules/shared/validation/fields';
 export const updateKnowledgeDocumentSchema = z.object({
   title: requiredText('El título', 200),
   content: requiredText('El contenido', 50_000),
+  triggerKeywords: z.string().max(300, 'Máximo 300 caracteres').nullable().optional(),
 });
 
 export type UpdateKnowledgeDocumentInput = z.infer<typeof updateKnowledgeDocumentSchema>;

@@ -12,6 +12,8 @@ import { resolveExchangeRate, usableExchangeRate } from '../domain/exchange-rate
 import { buildSystemPrompt } from '../domain/system-prompt';
 import { isFinalAttempt, type BotEventRow } from '../models/bot-event.model';
 import type { BotMessageRow } from '@/modules/conversation/models/conversation.model';
+import { knowledgeDocuments } from '@/modules/knowledge/models/knowledge.model';
+import { eq, and, isNotNull } from 'drizzle-orm';
 import type { BotChannelRepository } from '../repositories/bot-channel.repository';
 import type { BotSettingsRepository } from '../repositories/bot-settings.repository';
 import { buildToolRegistry } from '../tools/tool-registry';
@@ -117,6 +119,21 @@ export class BotProcessEventService {
       handoffMinutes: settings.handoffMinutes,
     };
 
+    const activeKeywords = await this.deps.db
+      .select({ triggerKeywords: knowledgeDocuments.triggerKeywords })
+      .from(knowledgeDocuments)
+      .where(
+        and(
+          eq(knowledgeDocuments.companyId, event.companyId),
+          eq(knowledgeDocuments.status, 'active'),
+          isNotNull(knowledgeDocuments.triggerKeywords)
+        )
+      );
+    const triggerKeywords = activeKeywords
+      .map(k => k.triggerKeywords?.trim())
+      .filter(k => k && k.length > 0)
+      .join(', ');
+
     let outcome: AgentOutcome;
     try {
       outcome = await runner.run({
@@ -129,6 +146,7 @@ export class BotProcessEventService {
           contact: { displayName: contact.displayName, phoneE164: contact.phoneE164 },
           client: client ? { code: client.code, name: client.name } : null,
           handoffEnabled: settings.handoffEnabled,
+          knowledgeKeywords: triggerKeywords.length > 0 ? triggerKeywords : null,
         }),
         history: toChatTurns(history),
         tools,

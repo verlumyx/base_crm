@@ -4,6 +4,7 @@ export type SystemPromptInput = {
   today: string;
   systemPrompt: string | null;
   personaPrompt: string | null;
+  knowledgeKeywords?: string | null;
   contact: { displayName: string | null; phoneE164: string | null };
   client: { code: string; name: string } | null;
   handoffEnabled: boolean;
@@ -36,6 +37,10 @@ export function buildSystemPrompt(input: SystemPromptInput): string {
 
   if (input.handoffEnabled) {
     lines.push('- Si el cliente pide hablar con una persona, o no puedes resolver algo, escala a un humano.');
+  }
+
+  if (input.knowledgeKeywords) {
+    lines.push(`- IMPORTANTE: Si el mensaje del usuario se relaciona con alguno de estos temas: [${input.knowledgeKeywords}], DEBES llamar a la herramienta 'buscar_informacion' obligatoriamente antes de responder. No asumas que conoces la respuesta.`);
   }
 
   lines.push('', 'Con quién hablas:');
