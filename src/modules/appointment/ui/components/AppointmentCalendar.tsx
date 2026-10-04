@@ -6,6 +6,7 @@ import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import { es } from 'date-fns/locale/es';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { Card } from '@/components/ui/card';
 import { type AppointmentDto } from '../../serializers/appointment.serializer';
 
 const locales = {
@@ -73,7 +74,7 @@ export function AppointmentCalendar({ appointments, companyId }: Props) {
   };
 
   return (
-    <div className="h-[600px] w-full bg-background rounded-lg shadow-sm border p-4">
+    <Card className="h-[700px] w-full rounded-2xl p-5">
       <Calendar
         localizer={localizer}
         events={events}
@@ -100,6 +101,6 @@ export function AppointmentCalendar({ appointments, companyId }: Props) {
           noEventsInRange: 'No hay citas en este rango',
         }}
       />
-    </div>
+    </Card>
   );
 }
