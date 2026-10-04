@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Calendar, dateFnsLocalizer, Views } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
@@ -15,7 +15,7 @@ const locales = {
 const localizer = dateFnsLocalizer({
   format,
   parse,
-  startOfWeek: () => startOfWeek(new Date(), { weekStartsOn: 1 }), // Lunes
+  startOfWeek: (date: Date) => startOfWeek(date, { weekStartsOn: 1 }), // Lunes
   getDay,
   locales,
 });
@@ -27,6 +27,11 @@ type Props = {
 
 export function AppointmentCalendar({ appointments, companyId }: Props) {
   const router = useRouter();
+  const [view, setView] = useState<any>(Views.WEEK);
+  const [date, setDate] = useState(new Date());
+
+  const handleNavigate = useCallback((newDate: Date) => setDate(newDate), []);
+  const handleView = useCallback((newView: any) => setView(newView), []);
 
   const events = appointments.map((appt) => ({
     id: appt.id,
@@ -79,7 +84,10 @@ export function AppointmentCalendar({ appointments, companyId }: Props) {
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
         eventPropGetter={eventStyleGetter}
-        defaultView={Views.WEEK}
+        view={view}
+        onView={handleView}
+        date={date}
+        onNavigate={handleNavigate}
         views={['month', 'week', 'day']}
         culture="es"
         messages={{

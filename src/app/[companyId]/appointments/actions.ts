@@ -74,7 +74,8 @@ export async function createAppointmentAction(
     if (error instanceof AppointmentOverlapException) {
       return { type: 'error' as const, message: error.message };
     }
-    return { type: 'error' as const, message: 'Ocurrió un error inesperado al crear la cita.' };
+    return { type: 'error' as const, message: error.message };
+    // return { type: 'error' as const, message: 'Ocurrió un error inesperado al crear la cita.' };
   }
 
   revalidatePath(`/${companyId}/appointments`);

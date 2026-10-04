@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, gte, ilike, lte, ne, or, sql } from 'drizzle-orm';
+import { and, asc, count, desc, eq, gte, ilike, like, lte, ne, or, sql } from 'drizzle-orm';
 import type { DbExecutor } from '@/modules/shared/infrastructure/db-executor';
 import { appointments, APPOINTMENT_CODE_PREFIX, APPOINTMENT_CODE_WIDTH, type AppointmentRow } from '../models/appointment.model';
 import { type AppointmentFilters } from './appointment.filters';
@@ -78,14 +78,28 @@ export class DrizzleAppointmentRepository implements AppointmentRepository {
   }
 
   private async generateNextCode(companyId: string): Promise<string> {
-    const [row] = await this.db
-      .select({ count: count() })
+    const scope = and(eq(appointments.companyId, companyId), like(appointments.code, `${APPOINTMENT_CODE_PREFIX}%`));
+
+    // 1. Queue behind any concurrent create for this company: FOR UPDATE blocks until the
+    //    other transaction commits or rolls back.
+    await this.db
+      .select({ id: appointments.id })
       .from(appointments)
-      .where(eq(appointments.companyId, companyId))
+      .where(scope)
+      .orderBy(desc(appointments.code))
+      .limit(1)
       .for('update');
 
-    const nextNumber = (row?.count ?? 0) + 1;
-    return `${APPOINTMENT_CODE_PREFIX}${String(nextNumber).padStart(APPOINTMENT_CODE_WIDTH, '0')}`;
+    // 2. Re-read once the lock is ours.
+    const [last] = await this.db
+      .select({ code: appointments.code })
+      .from(appointments)
+      .where(scope)
+      .orderBy(desc(appointments.code))
+      .limit(1);
+
+    const next = last ? Number(last.code.slice(APPOINTMENT_CODE_PREFIX.length)) + 1 : 1;
+    return `${APPOINTMENT_CODE_PREFIX}${String(next).padStart(APPOINTMENT_CODE_WIDTH, '0')}`;
   }
 
   async create(command: CreateAppointmentCommand): Promise<void> {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, startTransition } from 'react';
+import { useActionState, useEffect, startTransition, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { SearchableSelect } from '@/components/ui/searchable-select';
 import { FormSectionHead } from '@/components/form-section-head';
 import { uuidv7 } from '@/modules/shared/uuid';
 import { type AppointmentDto } from '../../serializers/appointment.serializer';
@@ -23,9 +23,22 @@ type Props = {
   initialTime?: string;
 };
 
+const DURATION_OPTIONS = [
+  { value: '15', label: '15 minutos' },
+  { value: '30', label: '30 minutos' },
+  { value: '45', label: '45 minutos' },
+  { value: '60', label: '1 hora' },
+  { value: '90', label: '1.5 horas' },
+  { value: '120', label: '2 horas' },
+  { value: '240', label: '4 horas' },
+];
+
 export function AppointmentForm({ companyId, clients, initialData, initialDate, initialTime }: Props) {
   const router = useRouter();
   const isEditing = !!initialData;
+
+  const [clientId, setClientId] = useState<string | null>(initialData?.clientId ?? null);
+  const [duration, setDuration] = useState<string | null>(initialData?.durationMinutes?.toString() ?? '60');
 
   const [state, action, isPending] = useActionState(
     isEditing
@@ -68,18 +81,16 @@ export function AppointmentForm({ companyId, clients, initialData, initialDate, 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="clientId" className="text-[13px] font-semibold">Cliente *</Label>
-                <Select name="clientId" defaultValue={initialData?.clientId}>
-                  <SelectTrigger id="clientId" className="h-[42px] rounded-[10px]">
-                    <SelectValue placeholder="Seleccionar cliente" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {clients.map((client) => (
-                      <SelectItem key={client.id} value={client.id}>
-                        {client.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  id="clientId"
+                  name="clientId"
+                  options={clients.map((c) => ({ value: c.id, label: c.name }))}
+                  value={clientId}
+                  onChange={setClientId}
+                  placeholder="Seleccionar cliente"
+                  searchPlaceholder="Buscar cliente..."
+                  className="h-[42px] rounded-[10px]"
+                />
                 {state?.errors?.clientId && <p className="text-sm text-destructive">{state.errors.clientId}</p>}
               </div>
 
@@ -97,20 +108,16 @@ export function AppointmentForm({ companyId, clients, initialData, initialDate, 
 
               <div className="space-y-2 md:col-span-2">
                 <Label htmlFor="durationMinutes" className="text-[13px] font-semibold">Duración *</Label>
-                <Select name="durationMinutes" defaultValue={initialData?.durationMinutes?.toString() ?? '60'}>
-                  <SelectTrigger id="durationMinutes" className="h-[42px] rounded-[10px]">
-                    <SelectValue placeholder="Duración de la cita" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="15">15 minutos</SelectItem>
-                    <SelectItem value="30">30 minutos</SelectItem>
-                    <SelectItem value="45">45 minutos</SelectItem>
-                    <SelectItem value="60">1 hora</SelectItem>
-                    <SelectItem value="90">1.5 horas</SelectItem>
-                    <SelectItem value="120">2 horas</SelectItem>
-                    <SelectItem value="240">4 horas</SelectItem>
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  id="durationMinutes"
+                  name="durationMinutes"
+                  options={DURATION_OPTIONS}
+                  value={duration}
+                  onChange={setDuration}
+                  placeholder="Duración de la cita"
+                  searchPlaceholder="Buscar duración..."
+                  className="h-[42px] rounded-[10px]"
+                />
                 {state?.errors?.durationMinutes && <p className="text-sm text-destructive">{state.errors.durationMinutes}</p>}
               </div>
             </div>
