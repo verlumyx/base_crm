@@ -15,3 +15,4 @@ export * from '@/modules/bot/models/bot-channel.model';
 export * from '@/modules/bot/models/bot-event.model';
 export * from '@/modules/conversation/models/conversation.model';
 export * from '@/modules/knowledge/models/knowledge.model';
+export * from '@/modules/appointment/models/appointment.model';

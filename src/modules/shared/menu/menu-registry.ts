@@ -25,6 +25,7 @@ export const MENU_REGISTRY: readonly MenuDefinition[] = [
   { id: '019cf226-1284-73f5-9291-d4615db63499', parentId: null, title: 'Dashboard', url: '/dashboard', permission: null, icon: 'LayoutGrid', order: 1, section: 'main' },
   { id: '019e7fa4-43bb-7208-ae00-65a4bef96502', parentId: null, title: 'Clientes', url: '/clients', permission: 'clients.list', icon: 'Contact', order: 2, section: 'main' },
   { id: '019f2000-0001-7000-a000-000000000001', parentId: null, title: 'Reclamos', url: '/claims', permission: 'claims.list', icon: 'MessageSquareWarning', order: 7, section: 'main' },
+  { id: '019f5000-0001-7000-a000-000000000001', parentId: null, title: 'Citas', url: '/appointments', permission: 'appointments.list', icon: 'CalendarDays', order: 8, section: 'main' },
   { id: BOT_ID, parentId: null, title: 'Bot IA', url: '/bot', permission: 'bot.show', icon: 'Bot', order: 10, section: 'main' },
   { id: '019f1000-0006-7000-a000-000000000006', parentId: BOT_ID, title: 'Panel', url: '/bot', permission: 'bot.show', icon: 'Bot', order: 1, section: 'main' },
   { id: '019f1000-0002-7000-a000-000000000002', parentId: BOT_ID, title: 'Conversaciones', url: '/bot/conversations', permission: 'bot.conversations', icon: 'MessagesSquare', order: 2, section: 'main' },

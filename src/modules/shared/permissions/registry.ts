@@ -5,6 +5,7 @@ import { COMPANY_MODULE } from '@/modules/company/permissions';
 import { CLIENT_MODULE } from '@/modules/client/permissions';
 import { CLAIM_MODULE } from '@/modules/claim/permissions';
 import { BOT_MODULE } from '@/modules/bot/permissions';
+import { APPOINTMENT_MODULE } from '@/modules/appointment/permissions';
 
 /** Every module's permission catalogue. Seeded into `app_modules` / `app_permissions` by `pnpm db:seed`. */
 export const PERMISSION_REGISTRY: readonly ModuleDefinition[] = [
@@ -14,6 +15,7 @@ export const PERMISSION_REGISTRY: readonly ModuleDefinition[] = [
   CLIENT_MODULE,
   CLAIM_MODULE,
   BOT_MODULE,
+  APPOINTMENT_MODULE,
 ];
 
 /** Modules gated on `is_system_owner` only: hidden from the roles tree and excluded from `permissionType = 'all'`. */
